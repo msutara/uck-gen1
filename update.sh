@@ -17,7 +17,6 @@ if [ `head -1 /etc/apt/sources.list | cut -d' ' -f3` == "jessie" ]; then
   fi
 fi
 
-DEBIAN_FRONTEND=noninteractive
 state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 
 #
@@ -26,34 +25,34 @@ state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 stretch () {
 rm -rfv /etc/apt/sources.list.d/*
 lsb_release -a
+DEBIAN_FRONTEND=noninteractive
+apt -qy purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-freeradius-setup  ubnt-mtk-initramfs  ubnt-unifi-setup  ubnt-systemhub
+apt -qy purge  nginx-light  libnginx-mod-http-echo  
 cat << EOF > /etc/apt/sources.list
 deb https://archive.debian.org/debian/ jessie main contrib non-free
 deb https://archive.debian.org/debian-security/ jessie/updates main contrib non-free
 EOF
-apt -y purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-freeradius-setup  ubnt-mtk-initramfs  ubnt-unifi-setup  ubnt-systemhub
-apt -y purge  nginx-common  nginx-light  libnginx-mod-http-echo  
-apt update
-apt-get install debian-archive-keyring
-apt-key update
-apt update
-apt-get -y upgrade
-apt-get -y --purge autoremove
+apt-get -qy update
+apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
+apt-get -qy --purge autoremove
 cat << EOF > /etc/apt/sources.list
 deb https://archive.debian.org/debian/ stretch main contrib non-free
 deb https://archive.debian.org/debian-security/ stretch/updates main contrib non-free
 EOF
-apt update
+apt-get -qy update
 apt-get install debian-archive-keyring
 apt-key update
-apt update
-apt-get -y upgrade
-apt-get -y --purge autoremove
-apt-get -y dist-upgrade 
+apt-get -qy update
+apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
+apt-get -qy --purge autoremove
+apt-get -qy dist-upgrade 
 echo "# buster" >> /etc/apt/sources.list
 reboot
-apt -y purge  postgresql  postgresql-client  postgresql-common  postgresql-contrib
-apt -y purge  unifi  mongodb-clients  mongodb-server
-apt-get -y --purge autoremove
+DEBIAN_FRONTEND=noninteractive
+apt -qy purge  nginx-common  
+apt -qy purge  postgresql  postgresql-client  postgresql-common  postgresql-contrib
+apt -qy purge  unifi  mongodb-clients  mongodb-server
+apt-get -qy autoclean
 }
 
 if [ -z $state ]; then
