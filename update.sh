@@ -31,18 +31,18 @@ deb https://archive.debian.org/debian/ stretch main contrib non-free
 deb https://archive.debian.org/debian-security/ stretch/updates main contrib non-free
 EOF
 apt -y purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-freeradius-setup  ubnt-mtk-initramfs  ubnt-unifi-setup  ubnt-systemhub
-apt -y purge  mongodb-clients  mongodb-server
-apt -y purge  postgresql  postgresql-client  postgresql-common  postgresql-contrib
 apt -y purge  nginx-common  nginx-light  libnginx-mod-http-echo  
 apt update
 apt-get install debian-archive-keyring
 apt-key update
 apt update
-apt upgrade -y 
-apt full-upgrade -y 
+apt upgrade -y
+apt-get -y --purge autoremove
+apt-get dist-upgrade -y 
 echo "# buster" >> /etc/apt/sources.list
 reboot
-apt -y purge  unifi
+apt -y purge  postgresql  postgresql-client  postgresql-common  postgresql-contrib
+apt -y purge  unifi  mongodb-clients  mongodb-server
 apt-get -y --purge autoremove
 }
 
