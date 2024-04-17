@@ -36,9 +36,9 @@ apt update
 apt-get install debian-archive-keyring
 apt-key update
 apt update
-apt upgrade -y
+apt-get -y upgrade
 apt-get -y --purge autoremove
-apt-get dist-upgrade -y 
+apt-get -y dist-upgrade 
 echo "# buster" >> /etc/apt/sources.list
 reboot
 apt -y purge  postgresql  postgresql-client  postgresql-common  postgresql-contrib
