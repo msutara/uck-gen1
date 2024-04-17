@@ -27,11 +27,21 @@ stretch () {
 rm -rfv /etc/apt/sources.list.d/*
 lsb_release -a
 cat << EOF > /etc/apt/sources.list
-deb https://archive.debian.org/debian/ stretch main contrib non-free
-deb https://archive.debian.org/debian-security/ stretch/updates main contrib non-free
+deb https://archive.debian.org/debian/ jessie main contrib non-free
+deb https://archive.debian.org/debian-security/ jessie/updates main contrib non-free
 EOF
 apt -y purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-freeradius-setup  ubnt-mtk-initramfs  ubnt-unifi-setup  ubnt-systemhub
 apt -y purge  nginx-common  nginx-light  libnginx-mod-http-echo  
+apt update
+apt-get install debian-archive-keyring
+apt-key update
+apt update
+apt-get -y upgrade
+apt-get -y --purge autoremove
+cat << EOF > /etc/apt/sources.list
+deb https://archive.debian.org/debian/ stretch main contrib non-free
+deb https://archive.debian.org/debian-security/ stretch/updates main contrib non-free
+EOF
 apt update
 apt-get install debian-archive-keyring
 apt-key update
