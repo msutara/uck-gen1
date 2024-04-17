@@ -30,7 +30,7 @@ cat << EOF > /etc/apt/sources.list
 deb https://archive.debian.org/debian/ stretch main contrib non-free
 deb https://archive.debian.org/debian-security/ stretch/updates main contrib non-free
 EOF
-apt -y purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-freeradius-setup  ubnt-mtk-initramfs  ubnt-unifi-setup  unifi  ubnt-systemhub
+apt -y purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-freeradius-setup  ubnt-mtk-initramfs  ubnt-unifi-setup  ubnt-systemhub
 apt -y purge  mongodb-clients  mongodb-server
 apt -y purge  postgresql  postgresql-client  postgresql-common  postgresql-contrib
 apt -y purge  nginx-common  nginx-light  libnginx-mod-http-echo  
@@ -38,10 +38,11 @@ apt update
 apt-get install debian-archive-keyring
 apt-key update
 apt update
-apt -y upgrade
-apt -y full-upgrade
+apt upgrade -y 
+apt full-upgrade -y 
 echo "# buster" >> /etc/apt/sources.list
 reboot
+apt -y purge  unifi
 apt-get -y --purge autoremove
 }
 
