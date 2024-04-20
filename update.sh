@@ -33,6 +33,7 @@ cat << EOF > /etc/apt/sources.list
 deb https://archive.debian.org/debian/ stretch main contrib non-free
 deb https://archive.debian.org/debian-security/ stretch/updates main contrib non-free
 EOF
+apt-key -qy update
 apt-get install debian-archive-keyring
 apt-key -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
