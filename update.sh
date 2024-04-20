@@ -45,7 +45,7 @@ reboot
 DEBIAN_FRONTEND=noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 apt -qy purge  debian-archive-keyring
-apt -qy purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-mtk-initramfs  ubnt-unifi-setup  ubnt-systemhub
+apt -qy purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-unifi-setup  ubnt-systemhub
 apt-get -qy --purge autoremove
 apt-get -qy autoclean
 }
