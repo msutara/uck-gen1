@@ -35,7 +35,7 @@ deb https://archive.debian.org/debian-security/ stretch/updates main contrib non
 EOF
 apt-get -qy update
 apt-get install debian-archive-keyring
-apt-key -y update
+apt-key update
 apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
 apt-get -qy --purge autoremove
