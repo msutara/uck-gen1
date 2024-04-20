@@ -33,9 +33,10 @@ cat << EOF > /etc/apt/sources.list
 deb https://archive.debian.org/debian/ stretch main contrib non-free
 deb https://archive.debian.org/debian-security/ stretch/updates main contrib non-free
 EOF
-apt-key -qy update
+apt-get -qy update
 apt-get install debian-archive-keyring
-apt-key -qy update
+apt-key -y update
+apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
 apt-get -qy --purge autoremove
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
@@ -45,6 +46,7 @@ DEBIAN_FRONTEND=noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 apt -qy purge  debian-archive-keyring
 apt -qy purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-mtk-initramfs  ubnt-unifi-setup  ubnt-systemhub
+apt-get -qy --purge autoremove
 apt-get -qy autoclean
 }
 
@@ -67,6 +69,7 @@ echo "# bullseye" >> /etc/apt/sources.list
 reboot
 DEBIAN_FRONTEND=noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+apt-get -qy --purge autoremove
 apt-get -qy autoclean
 }
 
@@ -76,5 +79,3 @@ else
   echo "Starting with $state"
   $state
 fi
-
-
