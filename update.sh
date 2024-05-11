@@ -44,8 +44,10 @@ echo "# buster" >> /etc/apt/sources.list
 reboot
 DEBIAN_FRONTEND=noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
-apt -qy purge  debian-archive-keyring
-apt -qy purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-unifi-setup  ubnt-systemhub
+apt -qy purge  debian-archive-keyring  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-unifi-setup  ubnt-systemhub  nginx-light  libnginx-mod-http-echo  postgresql  postgresql-client  postgresql-common  postgresql-contrib  unifi  mongodb-clients
+rm -rf /var/log/unifi/
+rm -rf /var/www/html/
+apt -qy purge  nginx-common
 apt-get -qy --purge autoremove
 apt-get -qy autoclean
 }
@@ -60,6 +62,29 @@ cat << EOF > /etc/apt/sources.list
 deb https://deb.debian.org/debian/ buster main contrib non-free
 deb https://deb.debian.org/debian/ buster-updates main contrib non-free
 deb https://deb.debian.org/debian-security/ buster/updates main contrib non-free
+EOF
+apt-get -qy update
+apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
+apt-get -qy --purge autoremove
+apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+echo "# bullseye" >> /etc/apt/sources.list
+reboot
+DEBIAN_FRONTEND=noninteractive
+echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+apt-get -qy --purge autoremove
+apt-get -qy autoclean
+}
+
+#
+# BULLSEYE
+#
+bullseye () {
+rm -rfv /etc/apt/sources.list.d/*
+lsb_release -a
+cat << EOF > /etc/apt/sources.list
+deb https://deb.debian.org/debian/ bullseye main contrib non-free
+deb https://deb.debian.org/debian/ bullseye-updates main contrib non-free
+deb https://deb.debian.org/debian-security/ bullseye/updates main contrib non-free
 EOF
 apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
