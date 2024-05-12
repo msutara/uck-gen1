@@ -19,7 +19,7 @@ echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 
 #
-# STRETCH
+# JESSIE
 #
 jessie () {
 
@@ -45,14 +45,10 @@ EOF
 
 sudo apt-get -qy update
 sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-sudo apt-get -qy --purge autoremove
 sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
 
 echo "# stretch" >> /etc/apt/sources.list
 
-sudo apt-get full-upgrade
-sudo apt-get -qy --purge autoremove
-sudo apt-get -qy autoclean
 reboot
 }
 
@@ -67,6 +63,13 @@ deb https://archive.debian.org/debian-security/ stretch/updates main contrib non
 EOF
 
 sudo apt-get -qy update
+
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 112695A0E562B32A
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 648ACFD622F3D138
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9
+
+sudo apt-get -qy update
+
 sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
 sudo apt-get -qy --purge autoremove
 sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
