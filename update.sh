@@ -35,13 +35,15 @@ stretch () {
 
 apt -qy purge  ubnt-freeradius-setup  libfreeradius2  freeradius-utils  freeradius-ldap  freeradius-common  freeradius
 
+apt-get install debian-archive-keyring
+apt-key update
+apt-get -qy update
+
 cat << EOF > /etc/apt/sources.list
 deb https://archive.debian.org/debian/ stretch main contrib non-free
 deb https://archive.debian.org/debian-security/ stretch/updates main contrib non-free
 EOF
 
-apt-get install debian-archive-keyring
-apt-key update
 apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
 apt-get -qy --purge autoremove
@@ -55,11 +57,11 @@ reboot
 #
 buster () {
 
-apt -qy purge  debian-archive-keyring  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-unifi-setup  ubnt-systemhub  nginx-light  libnginx-mod-http-echo  postgresql  postgresql-client  postgresql-common  postgresql-contrib  unifi  mongodb-clients
-rm -rf /var/www/html/
-apt -qy purge  nginx-common
 apt -qy purge  unifi
 rm -rf /var/log/unifi/
+apt -qy purge  debian-archive-keyring  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-unifi-setup  nginx-light  libnginx-mod-http-echo  postgresql  postgresql-client  postgresql-common  postgresql-contrib  mongodb-clients
+rm -rf /var/www/html/
+apt -qy purge  nginx-common
 
 cat << EOF > /etc/apt/sources.list
 deb https://deb.debian.org/debian/ buster main contrib non-free
