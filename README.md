@@ -24,7 +24,7 @@ For example:
 # By default this script does nothing.
 
 # Add your commands here
-bash ~/UCK/update.sh
+sudo bash ~/UCK/update.sh
 
 exit 0
 ```
