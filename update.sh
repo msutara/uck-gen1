@@ -27,11 +27,12 @@ state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 #
 stretch () {
 
+sudo dpkg -P unifi
+
 apt-get install debian-archive-keyring
 apt-key update
 
 systemctl disable cloudkey-webui
-systemctl disable unifi
 systemctl disable ubnt-freeradius-setup
 systemctl disable ubnt-unifi-runtime
 systemctl disable ubnt-unifi-setup
