@@ -7,7 +7,7 @@ function ctrl_c() {
 
 if [ `head -1 /etc/apt/sources.list | cut -d' ' -f3` == "jessie" ]; then
   if [ `cat /etc/apt/sources.list | egrep "^deb|^#" | wc -l` -le 4 ]; then
-    echo "# stretch" >> /etc/apt/sources.list
+    echo "# jessie" >> /etc/apt/sources.list
   fi
 fi
 
@@ -25,7 +25,7 @@ state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 #
 # STRETCH
 #
-stretch () {
+jessie () {
 
 sudo dpkg -P unifi
 
@@ -34,12 +34,29 @@ apt-key update
 
 systemctl disable cloudkey-webui
 systemctl disable ubnt-freeradius-setup
-systemctl disable ubnt-unifi-runtime
 systemctl disable ubnt-unifi-setup
 systemctl disable ubnt-systemhub
 
 systemctl disable nginx
 systemctl disable php5-fpm
+
+cat << EOF > /etc/apt/sources.list
+deb https://archive.debian.org/debian/ jessie main contrib non-free
+deb https://archive.debian.org/debian-security/ jessie/updates main contrib non-free
+EOF
+
+apt-get -qy update
+apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
+apt-get -qy --purge autoremove
+apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+echo "# stretch" >> /etc/apt/sources.list
+reboot
+}
+
+#
+# STRETCH
+#
+stretch () {
 
 cat << EOF > /etc/apt/sources.list
 deb https://archive.debian.org/debian/ stretch main contrib non-free
