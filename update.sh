@@ -1,13 +1,7 @@
 #!/bin/bash
 
-trap cleanup EXIT
-function cleanup {
-	rm -f upgrade.list
-}
-
 trap ctrl_c INT
 function ctrl_c() {
-	rm -f upgrade.list
 	ubnt-systool reset2defaults
 }
 
@@ -41,6 +35,10 @@ systemctl disable unifi
 systemctl disable ubnt-freeradius-setup
 systemctl disable ubnt-unifi-runtime
 systemctl disable ubnt-unifi-setup
+systemctl disable ubnt-systemhub
+
+systemctl disable nginx
+systemctl disable php5-fpm
 
 cat << EOF > /etc/apt/sources.list
 deb https://archive.debian.org/debian/ stretch main contrib non-free
