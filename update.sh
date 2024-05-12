@@ -40,7 +40,6 @@ deb https://archive.debian.org/debian/ stretch main contrib non-free
 deb https://archive.debian.org/debian-security/ stretch/updates main contrib non-free
 EOF
 
-apt-get -qy update
 apt-get install debian-archive-keyring
 apt-key update
 apt-get -qy update
