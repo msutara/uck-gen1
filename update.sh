@@ -2,7 +2,7 @@
 
 trap ctrl_c INT
 function ctrl_c() {
-	ubnt-systool reset2defaults
+  ubnt-systool reset2defaults
 }
 
 if [ `head -1 /etc/apt/sources.list | cut -d' ' -f3` == "jessie" ]; then
@@ -44,8 +44,11 @@ EOF
 
 apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" full-upgrade 
+apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+
 echo "# stretch" >> /etc/apt/sources.list
+
+apt-get full-upgrade
 apt-get -qy --purge autoremove
 apt-get -qy autoclean
 reboot
@@ -63,8 +66,11 @@ EOF
 
 apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" full-upgrade 
+apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+
 echo "# buster" >> /etc/apt/sources.list
+
+apt-get full-upgrade
 apt-get -qy --purge autoremove
 apt-get -qy autoclean
 reboot
@@ -83,8 +89,11 @@ EOF
 
 apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" full-upgrade 
+apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+
 echo "# bullseye" >> /etc/apt/sources.list
+
+apt-get full-upgrade
 apt-get -qy --purge autoremove
 apt-get -qy autoclean
 reboot
@@ -104,7 +113,9 @@ EOF
 
 apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" full-upgrade 
+apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+
+apt-get full-upgrade
 apt-get -qy --purge autoremove
 apt-get -qy autoclean
 reboot
