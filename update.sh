@@ -17,9 +17,6 @@ lsb_release -a
 DEBIAN_FRONTEND=noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
-apt-get -qy --purge autoremove
-apt-get -qy autoclean
-
 state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 
 #
@@ -47,9 +44,10 @@ EOF
 
 apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-apt-get -qy --purge autoremove
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" full-upgrade 
 echo "# stretch" >> /etc/apt/sources.list
+apt-get -qy --purge autoremove
+apt-get -qy autoclean
 reboot
 }
 
@@ -65,9 +63,10 @@ EOF
 
 apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-apt-get -qy --purge autoremove
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" full-upgrade 
 echo "# buster" >> /etc/apt/sources.list
+apt-get -qy --purge autoremove
+apt-get -qy autoclean
 reboot
 }
 
@@ -84,9 +83,10 @@ EOF
 
 apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-apt-get -qy --purge autoremove
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" full-upgrade 
 echo "# bullseye" >> /etc/apt/sources.list
+apt-get -qy --purge autoremove
+apt-get -qy autoclean
 reboot
 }
 
@@ -104,8 +104,9 @@ EOF
 
 apt-get -qy update
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-apt-get -qy --purge autoremove
 apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" full-upgrade 
+apt-get -qy --purge autoremove
+apt-get -qy autoclean
 reboot
 }
 
