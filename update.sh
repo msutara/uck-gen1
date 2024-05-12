@@ -11,7 +11,6 @@ if [ `head -1 /etc/apt/sources.list | cut -d' ' -f3` == "jessie" ]; then
   fi
 fi
 
-rm -rfv /etc/apt/sources.list.d/*
 lsb_release -a
 
 DEBIAN_FRONTEND=noninteractive
@@ -23,6 +22,8 @@ state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 # STRETCH
 #
 jessie () {
+
+rm -rfv /etc/apt/sources.list.d/*
 
 sudo dpkg -P unifi
 
