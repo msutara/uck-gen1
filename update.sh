@@ -48,8 +48,10 @@ deb https://archive.debian.org/debian-security/ jessie/updates main contrib non-
 EOF
 
 sudo apt-get -qy update
-sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+# sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
+# sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
+sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade 
 
 echo "# stretch" >> /etc/apt/sources.list
 
@@ -67,9 +69,10 @@ deb https://archive.debian.org/debian-security/ stretch/updates main contrib non
 EOF
 
 sudo apt-get -qy update
-sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-sudo apt-get -qy --purge autoremove
-sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+# sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
+# sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
+sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade 
 
 echo "# buster" >> /etc/apt/sources.list
 
@@ -91,9 +94,10 @@ deb https://deb.debian.org/debian-security/ buster/updates main contrib non-free
 EOF
 
 sudo apt-get -qy update
-sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-sudo apt-get -qy --purge autoremove
-sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+# sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
+# sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
+sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade 
 
 echo "# bullseye" >> /etc/apt/sources.list
 
@@ -116,9 +120,10 @@ deb https://deb.debian.org/debian-security/ bullseye-security/updates main contr
 EOF
 
 sudo apt-get -qy update
-sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
-sudo apt-get -qy --purge autoremove
-sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+# sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
+# sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
+sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
+sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade 
 
 sudo apt-get full-upgrade
 sudo apt-get -qy --purge autoremove
