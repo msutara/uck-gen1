@@ -83,7 +83,8 @@ bullseye () {
 cat << EOF > /etc/apt/sources.list
 deb https://deb.debian.org/debian/ bullseye main contrib non-free
 deb https://deb.debian.org/debian/ bullseye-updates main contrib non-free
-deb https://deb.debian.org/debian-security/ bullseye/updates main contrib non-free
+deb https://deb.debian.org/debian-security/ bullseye-security main contrib non-free
+deb https://deb.debian.org/debian-security/ bullseye-security/updates main contrib non-free
 EOF
 
 apt-get -qy update
