@@ -33,11 +33,14 @@ state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 #
 stretch () {
 
-apt -qy purge  ubnt-freeradius-setup  libfreeradius2  freeradius-utils  freeradius-ldap  freeradius-common  freeradius
-
 apt-get install debian-archive-keyring
 apt-key update
-apt-get -qy update
+
+systemctl disable cloudkey-webui
+systemctl disable unifi
+systemctl disable ubnt-freeradius-setup
+systemctl disable ubnt-unifi-runtime
+systemctl disable ubnt-unifi-setup
 
 cat << EOF > /etc/apt/sources.list
 deb https://archive.debian.org/debian/ stretch main contrib non-free
@@ -56,10 +59,6 @@ reboot
 # BUSTER
 #
 buster () {
-
-apt -qy purge  unifi
-rm -rf /var/log/unifi/
-apt -qy purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-unifi-setup  mongodb-clients
 
 cat << EOF > /etc/apt/sources.list
 deb https://deb.debian.org/debian/ buster main contrib non-free
