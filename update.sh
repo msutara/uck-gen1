@@ -59,7 +59,7 @@ buster () {
 
 apt -qy purge  unifi
 rm -rf /var/log/unifi/
-apt -qy purge  debian-archive-keyring  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-unifi-setup  nginx-light  libnginx-mod-http-echo  postgresql  postgresql-client  postgresql-common  postgresql-contrib  mongodb-clients
+apt -qy purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-unifi-setup  nginx-light  libnginx-mod-http-echo  mongodb-clients
 rm -rf /var/www/html/
 apt -qy purge  nginx-common
 
