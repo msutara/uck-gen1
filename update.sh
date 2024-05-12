@@ -59,9 +59,7 @@ buster () {
 
 apt -qy purge  unifi
 rm -rf /var/log/unifi/
-apt -qy purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-unifi-setup  nginx-light  libnginx-mod-http-echo  mongodb-clients
-rm -rf /var/www/html/
-apt -qy purge  nginx-common
+apt -qy purge  cloudkey-webui  ubnt-archive-keyring  ubnt-crash-report  ubnt-unifi-setup  mongodb-clients
 
 cat << EOF > /etc/apt/sources.list
 deb https://deb.debian.org/debian/ buster main contrib non-free
