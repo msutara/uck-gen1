@@ -30,6 +30,10 @@ sudo dpkg -P unifi
 sudo apt-get install debian-archive-keyring
 sudo apt-key update
 
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 112695A0E562B32A
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 648ACFD622F3D138
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9
+
 systemctl disable cloudkey-webui
 systemctl disable ubnt-freeradius-setup
 systemctl disable ubnt-unifi-setup
@@ -63,13 +67,6 @@ deb https://archive.debian.org/debian-security/ stretch/updates main contrib non
 EOF
 
 sudo apt-get -qy update
-
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 112695A0E562B32A
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 648ACFD622F3D138
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9
-
-sudo apt-get -qy update
-
 sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
 sudo apt-get -qy --purge autoremove
 sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
