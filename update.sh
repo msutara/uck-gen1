@@ -76,9 +76,6 @@ sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade
 
 echo "# buster" >> /etc/apt/sources.list
 
-sudo apt-get full-upgrade
-sudo apt-get -qy --purge autoremove
-sudo apt-get -qy autoclean
 reboot
 }
 
@@ -95,13 +92,14 @@ EOF
 
 sudo apt-get -qy update
 # sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" upgrade
+# sudo apt-get -qy --purge autoremove
 # sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" dist-upgrade 
 sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
+sudo apt-get -qy --purge autoremove
 sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade 
 
 echo "# bullseye" >> /etc/apt/sources.list
 
-sudo apt-get full-upgrade
 sudo apt-get -qy --purge autoremove
 sudo apt-get -qy autoclean
 reboot
@@ -125,7 +123,6 @@ sudo apt-get -qy update
 sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
 sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade 
 
-sudo apt-get full-upgrade
 sudo apt-get -qy --purge autoremove
 sudo apt-get -qy autoclean
 reboot
