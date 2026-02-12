@@ -8,15 +8,15 @@ jessie() {
     run_optional find /etc/apt/sources.list.d -mindepth 1 -maxdepth 1 -exec rm -rfv {} +
 
     log "Removing UniFi packages..."
-    run_optional sudo dpkg -P unifi
+    run_optional dpkg -P unifi
 
     log "Updating archive keyrings..."
-    run sudo apt-get install -y debian-archive-keyring
-    run sudo apt-key update
+    run apt-get install -y debian-archive-keyring
+    run apt-key update
 
-    run sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 112695A0E562B32A
-    run sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 648ACFD622F3D138
-    run sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9
+    run apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 112695A0E562B32A
+    run apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 648ACFD622F3D138
+    run apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9
 
     log "Disabling Ubiquiti services..."
     run_optional systemctl disable cloudkey-webui

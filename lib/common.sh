@@ -50,14 +50,14 @@ run_optional() {
 # --- APT helpers ---
 
 apt_upgrade() {
-    run sudo apt-get -qy update
-    run sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
-    run sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade
+    run apt-get -qy update
+    run apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
+    run apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade
 }
 
 apt_cleanup() {
-    run sudo apt-get -qy --purge autoremove
-    run sudo apt-get -qy autoclean
+    run apt-get -qy --purge autoremove
+    run apt-get -qy autoclean
 }
 
 # --- State management ---
@@ -94,8 +94,8 @@ get_current_state() {
 # --- Safety checks ---
 
 check_root() {
-    if [[ $EUID -ne 0 ]] && ! sudo -n true 2>/dev/null; then
-        log_error "This script must be run as root or with sudo"
+    if [[ $EUID -ne 0 ]]; then
+        log_error "This script must be run as root (try: sudo bash $0)"
         exit 1
     fi
 }

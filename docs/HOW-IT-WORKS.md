@@ -54,7 +54,7 @@ These steps are only needed once, before the first upgrade.
 
 - **Ctrl+C trap**: Interrupting the script triggers `ubnt-systool reset2defaults` (factory reset) as a recovery safeguard
 - **Non-interactive apt**: All apt operations use `DEBIAN_FRONTEND=noninteractive` with `--force-confnew` to avoid hanging on prompts
-- **Root check**: The script verifies it has root/sudo access before starting
+- **Root check**: The script verifies it is running as root before starting
 - **Network check**: Verifies connectivity to Debian mirrors before attempting apt operations
 
 ## File Structure
