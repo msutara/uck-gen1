@@ -1,0 +1,124 @@
+#!/bin/bash
+# UCK Gen1 Debian Upgrade — Main Entrypoint
+#
+# Upgrades a Ubiquiti Cloud Key Gen1 through Debian releases:
+# Jessie → Stretch → Buster → Bullseye → Bookworm
+#
+# See docs/HOW-IT-WORKS.md for architecture details.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIB_DIR="$(cd "$SCRIPT_DIR/../lib" && pwd)"
+
+# shellcheck source=../lib/common.sh
+source "$LIB_DIR/common.sh"
+
+# Source all release scripts
+for release_script in "$LIB_DIR"/releases/*.sh; do
+    # shellcheck source=/dev/null
+    source "$release_script"
+done
+
+trap ctrl_c INT
+ctrl_c() {
+    log "Interrupted — triggering factory reset"
+    ubnt-systool reset2defaults
+}
+
+usage() {
+    cat <<EOF
+Usage: uck-upgrade [OPTIONS]
+
+Headless Debian upgrade for Ubiquiti Cloud Key Gen1.
+Upgrades through: Jessie → Stretch → Buster → Bullseye → Bookworm
+
+Options:
+  --dry-run     Show what would happen without making changes
+  --status      Show current upgrade state and recent log entries
+  --version     Show version
+  -h, --help    Show this help message
+
+EOF
+}
+
+show_status() {
+    local state
+    state="$(get_current_state)"
+
+    if [[ -z "$state" ]]; then
+        echo "Status: Upgrade complete (or not started)"
+    else
+        echo "Status: Next stage is '$state'"
+    fi
+
+    echo ""
+    echo "Current OS:"
+    lsb_release -a 2>/dev/null || cat /etc/os-release 2>/dev/null || echo "Unknown"
+
+    if [[ -f "$UCK_LOG_FILE" ]]; then
+        echo ""
+        echo "Recent log entries:"
+        tail -20 "$UCK_LOG_FILE"
+    fi
+}
+
+# --- Parse arguments ---
+
+# shellcheck disable=SC2034  # DRY_RUN is used by lib/common.sh functions
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        --status)
+            show_status
+            exit 0
+            ;;
+        --version)
+            echo "uck-upgrade $UCK_VERSION"
+            exit 0
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+done
+
+# --- Pre-flight checks ---
+
+check_root
+check_network
+
+export DEBIAN_FRONTEND=noninteractive
+echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+# --- Detect initial Jessie state ---
+
+if [[ "$(head -1 "$UCK_SOURCES_LIST" | cut -d' ' -f3)" == "jessie" ]]; then
+    line_count="$(grep -cE '^deb|^#' "$UCK_SOURCES_LIST" || true)"
+    if [[ "$line_count" -le 4 ]]; then
+        echo "# jessie" >> "$UCK_SOURCES_LIST"
+    fi
+fi
+
+# --- Determine current state and run ---
+
+log "uck-upgrade $UCK_VERSION starting"
+lsb_release -a 2>/dev/null || true
+
+state="$(get_current_state)"
+
+if [[ -z "$state" ]]; then
+    log "Latest tested version installed — nothing to do."
+else
+    log "Starting upgrade stage: $state"
+    "$state"
+fi
