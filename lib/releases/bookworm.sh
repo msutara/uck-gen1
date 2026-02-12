@@ -13,7 +13,6 @@ deb https://deb.debian.org/debian-security/ bookworm-security main contrib non-f
 
     apt_upgrade
     transition_state "finalize"
-    safe_reboot
-
     log "=== Bookworm upgrade complete; final cleanup scheduled ==="
+    safe_reboot
 }

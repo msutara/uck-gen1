@@ -224,6 +224,7 @@ safe_reboot() {
     if [[ "$DRY_RUN" == true ]]; then
         log "[DRY-RUN] Would reboot now"
     else
-        reboot
+        # Non-returning in normal operation: replace current process with reboot command.
+        exec reboot
     fi
 }
