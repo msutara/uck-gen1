@@ -8,6 +8,8 @@ Automatically upgrades through Debian releases across reboots:
 Jessie (8) → Stretch (9) → Buster (10) → Bullseye (11) → Bookworm (12)
 ```
 
+After Bookworm, the script runs one final cleanup stage for slimming.
+
 ## Quick Start
 
 1. Boot your Cloud Key into recovery mode, factory reset, then reboot
@@ -31,6 +33,7 @@ sudo bash ~/UCK/bin/uck-upgrade --status
 
 - **Fully automated** — runs unattended across multiple reboots
 - **Dry-run mode** — preview changes with `--dry-run` before committing
+- **Default slim mode** — purges optional packages on final stage (`--keep-packages` to skip)
 - **Persistent logging** — full history in `/var/log/uck-upgrade.log`
 - **Safe interruption** — Ctrl+C triggers factory reset as a recovery safeguard
 

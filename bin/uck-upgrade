@@ -35,6 +35,8 @@ Upgrades through: Jessie → Stretch → Buster → Bullseye → Bookworm
 
 Options:
   --dry-run     Show what would happen without making changes
+  --keep-packages
+                Keep optional packages and skip final slimming purge
   --status      Show current upgrade state and recent log entries
   --version     Show version
   -h, --help    Show this help message
@@ -65,11 +67,15 @@ show_status() {
 
 # --- Parse arguments ---
 
-# shellcheck disable=SC2034  # DRY_RUN is used by lib/common.sh functions
+# shellcheck disable=SC2034  # DRY_RUN/KEEP_PACKAGES are used by lib/common.sh functions
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --dry-run)
             DRY_RUN=true
+            shift
+            ;;
+        --keep-packages)
+            KEEP_PACKAGES=true
             shift
             ;;
         --status)
@@ -95,17 +101,22 @@ done
 # --- Pre-flight checks ---
 
 check_root
-check_network
 
 export DEBIAN_FRONTEND=noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 # --- Detect initial Jessie state ---
 
+bootstrap_state=""
 if [[ "$(head -1 "$UCK_SOURCES_LIST" | cut -d' ' -f3)" == "jessie" ]]; then
     line_count="$(grep -cE '^deb|^#' "$UCK_SOURCES_LIST" || true)"
     if [[ "$line_count" -le 4 ]]; then
-        echo "# jessie" >> "$UCK_SOURCES_LIST"
+        if [[ "$DRY_RUN" == true ]]; then
+            log "[DRY-RUN] Bootstrapping initial state in-memory: jessie"
+            bootstrap_state="jessie"
+        else
+            set_next_state "jessie"
+        fi
     fi
 fi
 
@@ -114,7 +125,15 @@ fi
 log "uck-upgrade $UCK_VERSION starting"
 lsb_release -a 2>/dev/null || true
 
+load_state_options
 state="$(get_current_state)"
+if [[ -z "$state" && -n "$bootstrap_state" ]]; then
+    state="$bootstrap_state"
+fi
+
+if [[ -n "$state" && "$state" != "finalize" ]]; then
+    check_network
+fi
 
 if [[ -z "$state" ]]; then
     log "Latest tested version installed — nothing to do."

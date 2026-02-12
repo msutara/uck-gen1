@@ -4,7 +4,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if [[ -x "$SCRIPT_DIR/bin/uck-upgrade" ]]; then
+if [[ -f "$SCRIPT_DIR/bin/uck-upgrade" ]]; then
     exec bash "$SCRIPT_DIR/bin/uck-upgrade" "$@"
 else
     echo "ERROR: bin/uck-upgrade not found. Re-download from:" >&2

@@ -5,7 +5,7 @@
 The script upgrades through Debian releases sequentially:
 
 ```txt
-Jessie (8) → Stretch (9) → Buster (10) → Bullseye (11) → Bookworm (12)
+Jessie (8) → Stretch (9) → Buster (10) → Bullseye (11) → Bookworm (12) → Finalize
 ```
 
 Each step requires a reboot. The script is designed to resume automatically after each reboot via `/etc/rc.local`.
@@ -28,11 +28,12 @@ The upgrade progress is tracked using a comment on the last line of `/etc/apt/so
 ### State Transitions
 
 ```txt
-sources.list ends with "# jessie"  →  jessie()   →  appends "# stretch"  →  reboot
-sources.list ends with "# stretch" →  stretch()   →  appends "# buster"   →  reboot
-sources.list ends with "# buster"  →  buster()    →  appends "# bullseye" →  reboot
-sources.list ends with "# bullseye"→  bullseye()  →  appends "# bookworm" →  reboot
-sources.list ends with "# bookworm"→  bookworm()  →  no marker (done)
+sources.list ends with "# jessie"   → jessie()   → appends "# stretch"  → reboot
+sources.list ends with "# stretch"  → stretch()  → appends "# buster"   → reboot
+sources.list ends with "# buster"   → buster()   → appends "# bullseye" → reboot
+sources.list ends with "# bullseye" → bullseye() → appends "# bookworm" → reboot
+sources.list ends with "# bookworm" → bookworm() → appends "# finalize" → reboot
+sources.list ends with "# finalize" → finalize() → removes marker        → done
 ```
 
 ## Initial Jessie Detection
@@ -55,6 +56,7 @@ These steps are only needed once, before the first upgrade.
 - **Ctrl+C trap**: Interrupting the script triggers `ubnt-systool reset2defaults` (factory reset) as a recovery safeguard
 - **Non-interactive apt**: All apt operations use `DEBIAN_FRONTEND=noninteractive` with `--force-confnew` to avoid hanging on prompts
 - **Root check**: The script verifies it is running as root before starting
+- **Mirror check behavior**: The script requires at least one of the Debian mirrors (`deb.debian.org` or `archive.debian.org`) to be reachable before proceeding
 - **Network check**: Verifies connectivity to Debian mirrors before attempting apt operations
 
 ## File Structure
@@ -66,5 +68,6 @@ lib/releases/jessie.sh   Jessie-specific upgrade logic
 lib/releases/stretch.sh  Stretch upgrade logic
 lib/releases/buster.sh   Buster upgrade logic
 lib/releases/bullseye.sh Bullseye upgrade logic
-lib/releases/bookworm.sh Bookworm upgrade logic (final target)
+lib/releases/bookworm.sh Bookworm upgrade logic
+lib/releases/finalize.sh Final cleanup (slim + apt cleanup)
 ```

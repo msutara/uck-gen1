@@ -20,6 +20,8 @@ Usage: uck-upgrade [OPTIONS]
 
 Options:
   --dry-run     Show what would happen without making changes
+  --keep-packages
+                Keep optional packages and skip final slimming purge
   --status      Show current upgrade state and recent log entries
   --version     Show version
   -h, --help    Show this help message
@@ -56,6 +58,18 @@ All upgrade activity is logged to `/var/log/uck-upgrade.log` with timestamps. Th
 ```bash
 cat /var/log/uck-upgrade.log
 ```
+
+## Slim Mode
+
+By default, a dedicated final cleanup stage (after Bookworm) purges optional packages to keep the OS slim (for example: UniFi app stack, Java runtime, nginx/php-fpm, and setup helpers when present).
+
+If you want to keep those optional packages, run with:
+
+```bash
+sudo bash ~/UCK/bin/uck-upgrade --keep-packages
+```
+
+When this flag is used, the keep-packages preference is persisted in the stage marker and survives reboots until the final cleanup stage completes.
 
 ## Manual Installation
 

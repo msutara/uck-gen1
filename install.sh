@@ -25,11 +25,37 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
+# Validate required project files before installation.
+required_paths=(
+    "bin/uck-upgrade"
+    "lib/common.sh"
+    "lib/releases/jessie.sh"
+    "lib/releases/stretch.sh"
+    "lib/releases/buster.sh"
+    "lib/releases/bullseye.sh"
+    "lib/releases/bookworm.sh"
+    "lib/releases/finalize.sh"
+    "update.sh"
+    "uninstall.sh"
+    "docs/USAGE.md"
+    "docs/HOW-IT-WORKS.md"
+    "docs/TROUBLESHOOTING.md"
+)
+
+for rel_path in "${required_paths[@]}"; do
+    if [[ ! -e "$SCRIPT_DIR/$rel_path" ]]; then
+        echo "ERROR: Missing required file: $SCRIPT_DIR/$rel_path" >&2
+        echo "Please re-download a complete repository snapshot." >&2
+        exit 1
+    fi
+done
+
 # Copy project files
 echo "Installing to $INSTALL_DIR ..."
 mkdir -p "$INSTALL_DIR"
 cp -r "$SCRIPT_DIR/bin" "$INSTALL_DIR/"
 cp -r "$SCRIPT_DIR/lib" "$INSTALL_DIR/"
+cp -r "$SCRIPT_DIR/docs" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/update.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/uninstall.sh" "$INSTALL_DIR/"
 chmod +x "$INSTALL_DIR/bin/uck-upgrade"
@@ -53,11 +79,18 @@ exit 0
 EOF
     else
         # Insert before 'exit 0' if it exists, otherwise append
-        if grep -q "^exit 0" "$RC_LOCAL"; then
-            sed -i \
-                -e "/^exit 0/i\\$RC_LOCAL_MARKER" \
-                -e "/^exit 0/i\\$RC_LOCAL_CMD" \
-                "$RC_LOCAL"
+        if grep -Eq "^[[:space:]]*exit[[:space:]]+0[[:space:]]*$" "$RC_LOCAL"; then
+            tmp_rc="$(mktemp)"
+            awk -v marker="$RC_LOCAL_MARKER" -v cmd="$RC_LOCAL_CMD" '
+                /^[[:space:]]*exit[[:space:]]+0[[:space:]]*$/ && !inserted {
+                    print marker
+                    print cmd
+                    inserted = 1
+                }
+                { print }
+            ' "$RC_LOCAL" > "$tmp_rc"
+            cat "$tmp_rc" > "$RC_LOCAL"
+            rm -f "$tmp_rc"
         else
             echo "" >> "$RC_LOCAL"
             echo "$RC_LOCAL_MARKER" >> "$RC_LOCAL"

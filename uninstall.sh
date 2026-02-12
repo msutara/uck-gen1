@@ -26,7 +26,7 @@ if [[ -f "$RC_LOCAL" ]] && grep -q "$RC_LOCAL_MARKER" "$RC_LOCAL"; then
     sed -i "/$RC_LOCAL_MARKER/d" "$RC_LOCAL"
     sed -i '/UCK\/bin\/uck-upgrade/d' "$RC_LOCAL"
     # Also remove legacy entry if present
-    sed -i '/UCK\/update.sh/d' "$RC_LOCAL"
+    sed -i '/UCK\/update\.sh/d' "$RC_LOCAL"
     echo "Done."
 else
     echo "No upgrade entry found in $RC_LOCAL — skipping."
