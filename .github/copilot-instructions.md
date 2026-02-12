@@ -18,7 +18,7 @@ Headless Debian upgrade tool for Ubiquiti UniFi Cloud Key Gen1. Upgrades through
 - All output goes through `log()` which writes to both stdout and `/var/log/uck-upgrade.log`
 - `jessie.sh` is unique: it removes UniFi packages and disables Ubiquiti services before upgrading
 - Each release function follows the pattern: `write_sources_list` → `apt_upgrade` → optional `apt_cleanup` → `set_next_state` → `safe_reboot`
-- The final release (bookworm.sh) does not call `set_next_state` or `safe_reboot`
+- The final release (`bookworm.sh`) does not call `set_next_state` or `safe_reboot`
 
 ## Validation
 
