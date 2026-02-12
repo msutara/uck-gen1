@@ -4,7 +4,7 @@ Headless Debian upgrade for Ubiquiti UniFi Cloud Key Gen1.
 
 Automatically upgrades through Debian releases across reboots:
 
-```
+```txt
 Jessie (8) → Stretch (9) → Buster (10) → Bullseye (11) → Bookworm (12)
 ```
 

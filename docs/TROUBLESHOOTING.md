@@ -19,18 +19,23 @@ cat /var/log/uck-upgrade.log
 ### Upgrade appears stuck (not progressing after reboot)
 
 1. Check if the script is configured in rc.local:
+
    ```bash
    cat /etc/rc.local
    ```
+
    You should see a line containing `uck-upgrade` or `update.sh`.
 
 2. Check the current state:
+
    ```bash
    tail -1 /etc/apt/sources.list
    ```
+
    This should show a comment like `# stretch`, `# buster`, etc.
 
 3. Try running the script manually to see errors:
+
    ```bash
    sudo bash ~/UCK/bin/uck-upgrade
    ```
@@ -40,12 +45,14 @@ cat /var/log/uck-upgrade.log
 If apt-get fails during an upgrade stage:
 
 1. Check network connectivity:
+
    ```bash
    ping -c 3 deb.debian.org
    ping -c 3 archive.debian.org
    ```
 
 2. Try running the failed stage manually:
+
    ```bash
    sudo apt-get update
    sudo apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
@@ -53,6 +60,7 @@ If apt-get fails during an upgrade stage:
    ```
 
 3. If packages are broken:
+
    ```bash
    sudo dpkg --configure -a
    sudo apt-get -f install

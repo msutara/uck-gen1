@@ -4,7 +4,7 @@
 
 The script upgrades through Debian releases sequentially:
 
-```
+```txt
 Jessie (8) → Stretch (9) → Buster (10) → Bullseye (11) → Bookworm (12)
 ```
 
@@ -27,7 +27,7 @@ The upgrade progress is tracked using a comment on the last line of `/etc/apt/so
 
 ### State Transitions
 
-```
+```txt
 sources.list ends with "# jessie"  →  jessie()   →  appends "# stretch"  →  reboot
 sources.list ends with "# stretch" →  stretch()   →  appends "# buster"   →  reboot
 sources.list ends with "# buster"  →  buster()    →  appends "# bullseye" →  reboot
@@ -59,7 +59,7 @@ These steps are only needed once, before the first upgrade.
 
 ## File Structure
 
-```
+```txt
 bin/uck-upgrade          Main entrypoint — argument parsing, state dispatch
 lib/common.sh            Shared functions (logging, apt helpers, state management)
 lib/releases/jessie.sh   Jessie-specific upgrade logic

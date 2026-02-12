@@ -15,7 +15,7 @@ The upgrade will proceed automatically through each reboot.
 
 ## Command-Line Options
 
-```
+```txt
 Usage: uck-upgrade [OPTIONS]
 
 Options:
@@ -34,6 +34,7 @@ sudo bash ~/UCK/bin/uck-upgrade --dry-run
 ```
 
 This will log every command that *would* be executed, including:
+
 - Which sources.list would be written
 - Which apt commands would run
 - When a reboot would occur
@@ -62,9 +63,11 @@ If you prefer not to use the installer script:
 
 1. Download the repository to `~/UCK/`
 2. Add this line to `/etc/rc.local` (before `exit 0`):
-   ```
+
+   ```bash
    bash ~/UCK/bin/uck-upgrade
    ```
+
 3. Make rc.local executable: `chmod +x /etc/rc.local`
 4. Reboot
 
