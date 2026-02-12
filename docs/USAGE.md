@@ -63,7 +63,7 @@ If you prefer not to use the installer script:
 1. Download the repository to `~/UCK/`
 2. Add this line to `/etc/rc.local` (before `exit 0`):
    ```
-   sudo bash ~/UCK/bin/uck-upgrade
+   bash ~/UCK/bin/uck-upgrade
    ```
 3. Make rc.local executable: `chmod +x /etc/rc.local`
 4. Reboot

@@ -5,7 +5,7 @@
 jessie() {
     log "=== Starting Jessie upgrade stage ==="
 
-    run rm -rfv /etc/apt/sources.list.d/*
+    run_optional find /etc/apt/sources.list.d -mindepth 1 -maxdepth 1 -exec rm -rfv {} +
 
     log "Removing UniFi packages..."
     run_optional sudo dpkg -P unifi

@@ -5,9 +5,9 @@
 
 set -euo pipefail
 
-TARGET_USER="${SUDO_USER:-$USER}"
-TARGET_HOME="$(getent passwd "$TARGET_USER" | cut -d: -f6)"
-TARGET_HOME="${TARGET_HOME:-$HOME}"
+TARGET_USER="${SUDO_USER:-${USER:-root}}"
+TARGET_HOME="$(getent passwd "$TARGET_USER" | cut -d: -f6 || true)"
+TARGET_HOME="${TARGET_HOME:-${HOME:-/root}}"
 INSTALL_DIR="${TARGET_HOME}/UCK"
 RC_LOCAL="/etc/rc.local"
 RC_LOCAL_MARKER="# UCK-GEN1-UPGRADE"

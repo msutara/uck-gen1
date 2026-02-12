@@ -7,14 +7,14 @@
 
 set -euo pipefail
 
-TARGET_USER="${SUDO_USER:-$USER}"
-TARGET_HOME="$(getent passwd "$TARGET_USER" | cut -d: -f6)"
-TARGET_HOME="${TARGET_HOME:-$HOME}"
+TARGET_USER="${SUDO_USER:-${USER:-root}}"
+TARGET_HOME="$(getent passwd "$TARGET_USER" | cut -d: -f6 || true)"
+TARGET_HOME="${TARGET_HOME:-${HOME:-/root}}"
 INSTALL_DIR="${TARGET_HOME}/UCK"
 RC_LOCAL="/etc/rc.local"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RC_LOCAL_MARKER="# UCK-GEN1-UPGRADE"
-RC_LOCAL_CMD="sudo bash ${INSTALL_DIR}/bin/uck-upgrade"
+RC_LOCAL_CMD="bash ${INSTALL_DIR}/bin/uck-upgrade"
 
 echo "=== UCK Gen1 Upgrade Installer ==="
 echo ""
