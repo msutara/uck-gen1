@@ -28,8 +28,9 @@ jessie() {
 
     write_sources_list "deb https://archive.debian.org/debian/ jessie main contrib non-free
 deb https://archive.debian.org/debian-security/ jessie/updates main contrib non-free"
+    set_next_state "jessie"
 
     apt_upgrade
-    set_next_state "stretch"
+    transition_state "stretch"
     safe_reboot
 }

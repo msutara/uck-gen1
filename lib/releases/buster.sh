@@ -7,9 +7,10 @@ buster() {
     write_sources_list "deb https://deb.debian.org/debian/ buster main contrib non-free
 deb https://deb.debian.org/debian/ buster-updates main contrib non-free
 deb https://deb.debian.org/debian-security/ buster/updates main contrib non-free"
+    set_next_state "buster"
 
     apt_upgrade
     apt_cleanup
-    set_next_state "bullseye"
+    transition_state "bullseye"
     safe_reboot
 }

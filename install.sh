@@ -62,6 +62,14 @@ chmod +x "$INSTALL_DIR/bin/uck-upgrade"
 chmod +x "$INSTALL_DIR/update.sh"
 chmod +x "$INSTALL_DIR/uninstall.sh"
 
+# Ensure installed files are owned by the target user, not root.
+TARGET_GROUP="$(id -gn "$TARGET_USER" 2>/dev/null || true)"
+if [[ -n "$TARGET_GROUP" ]]; then
+    chown -R "${TARGET_USER}:${TARGET_GROUP}" "$INSTALL_DIR"
+else
+    chown -R "$TARGET_USER" "$INSTALL_DIR"
+fi
+
 # Set up rc.local
 if [[ -f "$RC_LOCAL" ]] && grep -q "$RC_LOCAL_MARKER" "$RC_LOCAL"; then
     echo "rc.local already configured — skipping."
