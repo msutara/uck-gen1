@@ -19,21 +19,22 @@ The upgrade progress is tracked using a comment on the last line of `/etc/apt/so
 3. It calls the function matching that state name (e.g., `stretch()`)
 4. The function:
    - Overwrites `sources.list` with the correct mirrors for that release
+   - Calls `set_next_state("<current>")` so an unexpected reboot resumes the same release step
    - Runs `apt-get update`, `upgrade`, and `dist-upgrade`
-   - Appends the *next* release name as a comment (e.g., `# buster`)
+   - On success, calls `transition_state("<next>")` so the marker becomes the next release (e.g., `# buster`)
    - Reboots
-5. On next boot, the script picks up the new state and continues
+5. On next boot, the script picks up the updated marker and continues
 6. When no state marker is found, the upgrade is complete
 
 ### State Transitions
 
 ```txt
-sources.list ends with "# jessie"   → jessie()   → appends "# stretch"  → reboot
-sources.list ends with "# stretch"  → stretch()  → appends "# buster"   → reboot
-sources.list ends with "# buster"   → buster()   → appends "# bullseye" → reboot
-sources.list ends with "# bullseye" → bullseye() → appends "# bookworm" → reboot
-sources.list ends with "# bookworm" → bookworm() → appends "# finalize" → reboot
-sources.list ends with "# finalize" → finalize() → removes marker        → done
+sources.list ends with "# jessie"   → jessie()   → set_next_state("jessie")   → apt upgrade → transition_state("stretch")  → reboot
+sources.list ends with "# stretch"  → stretch()  → set_next_state("stretch")  → apt upgrade → transition_state("buster")   → reboot
+sources.list ends with "# buster"   → buster()   → set_next_state("buster")   → apt upgrade → transition_state("bullseye") → reboot
+sources.list ends with "# bullseye" → bullseye() → set_next_state("bullseye") → apt upgrade → transition_state("bookworm") → reboot
+sources.list ends with "# bookworm" → bookworm() → set_next_state("bookworm") → apt upgrade → transition_state("finalize") → reboot
+sources.list ends with "# finalize" → finalize() → set_next_state("finalize") → finalize()  → clear marker                → done
 ```
 
 ## Initial Jessie Detection

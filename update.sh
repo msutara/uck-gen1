@@ -2,6 +2,8 @@
 # Backward-compatible wrapper for uck-upgrade
 # Kept so existing rc.local entries referencing update.sh continue to work.
 
+set -euo pipefail
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [[ -f "$SCRIPT_DIR/bin/uck-upgrade" ]]; then
