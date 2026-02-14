@@ -65,6 +65,7 @@ run_optional() {
 disable_ubnt_hooks() {
     local f
     for f in /etc/apt/apt.conf.d/*ubnt* /etc/dpkg/dpkg.cfg.d/*ubnt*; do
+        [[ "$f" == *.disabled ]] && continue
         if [[ -f "$f" ]]; then
             if [[ "$DRY_RUN" == true ]]; then
                 log "[DRY-RUN] Would disable hook: $f"
@@ -354,7 +355,7 @@ check_root() {
 }
 
 # Require at least one Debian mirror to be reachable.
-# Retries with backoff since rc.local may run before networking is fully up.
+# Retries with a fixed delay since rc.local may run before networking is fully up.
 check_network() {
     local attempt max_attempts=12 wait_secs=10
 
@@ -385,7 +386,7 @@ safe_reboot() {
         # which prevents /etc/rc.local from executing on boot.
         if [[ -f /lib/systemd/system/rc-local.service ]] ||
            [[ -f /etc/systemd/system/rc-local.service ]]; then
-            run systemctl enable rc-local.service
+            run_optional systemctl enable rc-local.service
         fi
     fi
     log "Stage complete. Rebooting to continue upgrade..."
