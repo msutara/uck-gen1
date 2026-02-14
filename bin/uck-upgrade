@@ -110,15 +110,19 @@ echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 # --- Detect initial Jessie state ---
 
 bootstrap_state=""
-if [[ "$(head -1 "$UCK_SOURCES_LIST" | cut -d' ' -f3)" == "jessie" ]]; then
-    line_count="$(grep -cE '^deb|^#' "$UCK_SOURCES_LIST" || true)"
-    if [[ "$line_count" -le 4 ]]; then
-        if [[ "$DRY_RUN" == true ]]; then
-            log "[DRY-RUN] Bootstrapping initial state in-memory: jessie"
-            bootstrap_state="jessie"
-        else
-            set_next_state "jessie"
-        fi
+current_state="$(get_current_state)"
+mapfile -t source_releases < <(
+    awk '$1=="deb"{split($3, rel, "/"); print rel[1]}' "$UCK_SOURCES_LIST" 2>/dev/null | sort -u
+)
+
+if [[ -z "$current_state" &&
+      ${#source_releases[@]} -eq 1 &&
+      "${source_releases[0]}" == "jessie" ]]; then
+    if [[ "$DRY_RUN" == true ]]; then
+        log "[DRY-RUN] Bootstrapping initial state in-memory: jessie"
+        bootstrap_state="jessie"
+    else
+        set_next_state "jessie"
     fi
 fi
 
