@@ -201,6 +201,39 @@ load_state_options() {
     fi
 }
 
+ensure_ssh_continuity() {
+    local ssh_service=""
+
+    if [[ "$DRY_RUN" == true ]]; then
+        log "[DRY-RUN] Would ensure openssh-server is installed and SSH service is enabled"
+        return 0
+    fi
+
+    if ! dpkg-query -W -f='${Status}' openssh-server 2>/dev/null | grep -q "install ok installed"; then
+        log "Installing openssh-server to preserve remote access..."
+        run apt-get -qy install openssh-server
+    fi
+
+    if [[ -f /lib/systemd/system/ssh.service || -f /etc/systemd/system/ssh.service ]]; then
+        ssh_service="ssh"
+    elif [[ -f /lib/systemd/system/sshd.service || -f /etc/systemd/system/sshd.service ]]; then
+        ssh_service="sshd"
+    fi
+
+    if [[ -z "$ssh_service" ]]; then
+        log_error "Could not find SSH service unit (ssh.service or sshd.service). Refusing to reboot."
+        exit 1
+    fi
+
+    run systemctl enable "$ssh_service"
+    run systemctl start "$ssh_service"
+
+    if ! systemctl is-active --quiet "$ssh_service"; then
+        log_error "SSH service '$ssh_service' is not active. Refusing to reboot."
+        exit 1
+    fi
+}
+
 # Ensure rc.local always contains the continuation command while upgrade is in progress.
 ensure_rc_local_continuation() {
     local continuation_cmd="$1"
@@ -293,6 +326,8 @@ check_network() {
 # --- Reboot ---
 
 safe_reboot() {
+    ensure_ssh_continuity
+
     if [[ -n "${UCK_CONTINUATION_CMD:-}" ]]; then
         ensure_rc_local_continuation "$UCK_CONTINUATION_CMD"
     fi
