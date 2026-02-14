@@ -22,11 +22,7 @@ jessie() {
     run apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 648ACFD622F3D138
     run apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9
 
-    log "Disabling Ubiquiti services..."
-    run_optional systemctl disable cloudkey-webui
-    run_optional systemctl disable ubnt-freeradius-setup
-    run_optional systemctl disable ubnt-unifi-setup
-    run_optional systemctl disable ubnt-systemhub
+    log "Disabling remaining services..."
     run_optional systemctl disable nginx
     run_optional systemctl disable php5-fpm
 
