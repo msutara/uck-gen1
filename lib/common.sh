@@ -294,6 +294,7 @@ ensure_rc_local_continuation() {
 
     if [[ "$DRY_RUN" == true ]]; then
         log "[DRY-RUN] Would ensure marker '$UCK_RC_LOCAL_MARKER' and command '$continuation_cmd' in $UCK_RC_LOCAL"
+        log "[DRY-RUN] Would enable rc-local.service if systemd is present"
         return 0
     fi
 
@@ -336,6 +337,11 @@ EOF
     fi
 
     chmod +x "$UCK_RC_LOCAL"
+
+    # Ensure rc-local.service is enabled (stretch+ may disable it after upgrades)
+    if command -v systemctl &>/dev/null; then
+        systemctl enable rc-local.service 2>/dev/null || true
+    fi
 }
 
 # --- Safety checks ---
