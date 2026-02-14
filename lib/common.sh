@@ -2,9 +2,9 @@
 # Common functions for UCK Gen1 Debian upgrade
 # Sourced by bin/uck-upgrade and lib/releases/*.sh
 
-readonly UCK_LOG_FILE="/var/log/uck-upgrade.log"
-readonly UCK_SOURCES_LIST="/etc/apt/sources.list"
-readonly UCK_RC_LOCAL="/etc/rc.local"
+readonly UCK_LOG_FILE="${UCK_LOG_FILE:-/var/log/uck-upgrade.log}"
+readonly UCK_SOURCES_LIST="${UCK_SOURCES_LIST:-/etc/apt/sources.list}"
+readonly UCK_RC_LOCAL="${UCK_RC_LOCAL:-/etc/rc.local}"
 readonly UCK_RC_LOCAL_MARKER="# UCK-GEN1-UPGRADE"
 # shellcheck disable=SC2034  # used by bin/uck-upgrade which sources this file
 readonly UCK_VERSION="2.0.0"
