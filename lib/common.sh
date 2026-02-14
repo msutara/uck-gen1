@@ -80,6 +80,8 @@ disable_ubnt_hooks() {
 apt_upgrade() {
     disable_ubnt_hooks
     run apt-get -qy update
+    run_optional dpkg --configure -a
+    run_optional apt-get -qy -o "Dpkg::Options::=--force-confnew" --fix-broken install
     run apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
     run apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade
 }
