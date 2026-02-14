@@ -1,4 +1,4 @@
-name: Lint
+name: CI
 
 on:
   push:
@@ -18,3 +18,10 @@ jobs:
       - name: Run ShellCheck
         run: |
           find . -type f \( -name '*.sh' -o -name 'uck-upgrade' \) -print0 | xargs -0 shellcheck --severity=warning
+
+  dry-run-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dry-run smoke test
+        run: sudo bash tests/dry-run-smoke.sh

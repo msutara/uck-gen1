@@ -2,9 +2,9 @@
 # Common functions for UCK Gen1 Debian upgrade
 # Sourced by bin/uck-upgrade and lib/releases/*.sh
 
-readonly UCK_LOG_FILE="/var/log/uck-upgrade.log"
-readonly UCK_SOURCES_LIST="/etc/apt/sources.list"
-readonly UCK_RC_LOCAL="/etc/rc.local"
+readonly UCK_LOG_FILE="${UCK_LOG_FILE:-/var/log/uck-upgrade.log}"
+readonly UCK_SOURCES_LIST="${UCK_SOURCES_LIST:-/etc/apt/sources.list}"
+readonly UCK_RC_LOCAL="${UCK_RC_LOCAL:-/etc/rc.local}"
 readonly UCK_RC_LOCAL_MARKER="# UCK-GEN1-UPGRADE"
 # shellcheck disable=SC2034  # used by bin/uck-upgrade which sources this file
 readonly UCK_VERSION="2.0.0"
@@ -221,6 +221,14 @@ load_state_options() {
     fi
 }
 
+detect_ssh_unit() {
+    if [[ -f /lib/systemd/system/ssh.service || -f /etc/systemd/system/ssh.service ]]; then
+        echo "ssh"
+    elif [[ -f /lib/systemd/system/sshd.service || -f /etc/systemd/system/sshd.service ]]; then
+        echo "sshd"
+    fi
+}
+
 ensure_ssh_continuity() {
     local ssh_service=""
 
@@ -234,11 +242,7 @@ ensure_ssh_continuity() {
         run apt-get -qy install openssh-server
     fi
 
-    if [[ -f /lib/systemd/system/ssh.service || -f /etc/systemd/system/ssh.service ]]; then
-        ssh_service="ssh"
-    elif [[ -f /lib/systemd/system/sshd.service || -f /etc/systemd/system/sshd.service ]]; then
-        ssh_service="sshd"
-    fi
+    ssh_service="$(detect_ssh_unit)"
 
     if [[ -z "$ssh_service" ]]; then
         log_error "Could not find SSH service unit (ssh.service or sshd.service). Refusing to reboot."
