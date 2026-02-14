@@ -92,6 +92,15 @@ This is expected — the Cloud Key reboots between each stage. Wait 2–3 minute
 ssh ubnt@<cloud-key-ip>
 ```
 
+If Bullseye → Bookworm specifically drops SSH, reconnect using local console and re-enable SSH:
+
+```bash
+sudo apt-get -qy install openssh-server
+sudo systemctl enable ssh
+sudo systemctl start ssh
+sudo systemctl status ssh --no-pager
+```
+
 ## Manual Recovery
 
 If the automated upgrade fails partway through, you can manually advance to the next stage:

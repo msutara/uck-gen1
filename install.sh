@@ -71,7 +71,13 @@ else
 fi
 
 # Set up rc.local
-if [[ -f "$RC_LOCAL" ]] && grep -q "$RC_LOCAL_MARKER" "$RC_LOCAL"; then
+if [[ -f "$RC_LOCAL" ]] &&
+   [[ -x "$RC_LOCAL" ]] &&
+   awk -v marker="$RC_LOCAL_MARKER" -v cmd="$RC_LOCAL_CMD" '
+       /^[ \t]*exit[ \t]+0[ \t]*$/ { exit }
+       { if (index($0, marker)) m=1; if (index($0, cmd)) c=1 }
+       END { exit !(m && c) }
+   ' "$RC_LOCAL"; then
     echo "rc.local already configured — skipping."
 else
     echo "Configuring $RC_LOCAL ..."
@@ -86,11 +92,15 @@ $RC_LOCAL_CMD
 exit 0
 EOF
     else
+        sed -i "\|$RC_LOCAL_MARKER|d" "$RC_LOCAL"
+        sed -i '/UCK\/bin\/uck-upgrade/d' "$RC_LOCAL"
+        sed -i '/UCK\/update\.sh/d' "$RC_LOCAL"
+
         # Insert before 'exit 0' if it exists, otherwise append
-        if grep -Eq "^[[:space:]]*exit[[:space:]]+0[[:space:]]*$" "$RC_LOCAL"; then
+        if grep -Eq '^[[:blank:]]*exit[[:blank:]]+0[[:blank:]]*$' "$RC_LOCAL"; then
             tmp_rc="$(mktemp)"
             awk -v marker="$RC_LOCAL_MARKER" -v cmd="$RC_LOCAL_CMD" '
-                /^[[:space:]]*exit[[:space:]]+0[[:space:]]*$/ && !inserted {
+                /^[ \t]*exit[ \t]+0[ \t]*$/ && !inserted {
                     print marker
                     print cmd
                     inserted = 1

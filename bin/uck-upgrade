@@ -14,6 +14,8 @@ LIB_DIR="$(cd "$SCRIPT_DIR/../lib" && pwd)"
 # shellcheck source=../lib/common.sh
 source "$LIB_DIR/common.sh"
 
+UCK_CONTINUATION_CMD="bash $SCRIPT_DIR/uck-upgrade"
+
 # Source all release scripts
 for release_script in "$LIB_DIR"/releases/*.sh; do
     # shellcheck source=/dev/null
@@ -108,15 +110,19 @@ echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 # --- Detect initial Jessie state ---
 
 bootstrap_state=""
-if [[ "$(head -1 "$UCK_SOURCES_LIST" | cut -d' ' -f3)" == "jessie" ]]; then
-    line_count="$(grep -cE '^deb|^#' "$UCK_SOURCES_LIST" || true)"
-    if [[ "$line_count" -le 4 ]]; then
-        if [[ "$DRY_RUN" == true ]]; then
-            log "[DRY-RUN] Bootstrapping initial state in-memory: jessie"
-            bootstrap_state="jessie"
-        else
-            set_next_state "jessie"
-        fi
+current_state="$(get_current_state)"
+mapfile -t source_releases < <(
+    awk '$1=="deb"{split($3, rel, "/"); print rel[1]}' "$UCK_SOURCES_LIST" 2>/dev/null | sort -u
+)
+
+if [[ -z "$current_state" &&
+      ${#source_releases[@]} -eq 1 &&
+      "${source_releases[0]}" == "jessie" ]]; then
+    if [[ "$DRY_RUN" == true ]]; then
+        log "[DRY-RUN] Bootstrapping initial state in-memory: jessie"
+        bootstrap_state="jessie"
+    else
+        set_next_state "jessie"
     fi
 fi
 
@@ -131,12 +137,31 @@ if [[ -z "$state" && -n "$bootstrap_state" ]]; then
     state="$bootstrap_state"
 fi
 
+if [[ -n "$state" ]]; then
+    ensure_rc_local_continuation "$UCK_CONTINUATION_CMD"
+fi
+
 if [[ -n "$state" && "$state" != "finalize" ]]; then
     check_network
 fi
 
 if [[ -z "$state" ]]; then
     log "Latest tested version installed — nothing to do."
+elif [[ "$DRY_RUN" == true ]]; then
+    # In dry-run mode, simulate all stages sequentially without rebooting.
+    readonly STAGE_ORDER=(jessie stretch buster bullseye bookworm finalize)
+    started=false
+    for stage in "${STAGE_ORDER[@]}"; do
+        if [[ "$started" == false ]]; then
+            if [[ "$stage" == "$state" ]]; then
+                started=true
+            else
+                continue
+            fi
+        fi
+        log "Starting upgrade stage: $stage"
+        "$stage"
+    done
 else
     log "Starting upgrade stage: $state"
     "$state"
