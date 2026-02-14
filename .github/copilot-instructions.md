@@ -19,7 +19,7 @@ Headless Debian upgrade tool for Ubiquiti UniFi Cloud Key Gen1. Upgrades through
 - Non-critical commands use `run_optional` which allows failures without aborting
 - All output goes through `log()` which writes to both stdout and `/var/log/uck-upgrade.log`
 - All awk patterns must use `[ \t]` (not `[[:space:]]`) for mawk compatibility on Jessie
-- All grep patterns use `[[:blank:]]` for POSIX portability
+- Grep patterns that match whitespace-sensitive lines (e.g. `exit 0`) should prefer `[[:blank:]]` for POSIX portability
 - `jessie.sh` is unique: it purges UniFi/Ubiquiti/freeradius packages (dependants first) and disables services before upgrading
 - Each release function follows the pattern: `write_sources_list` → `set_next_state(current)` → `apt_upgrade` → optional `apt_cleanup` → `transition_state(next)` → `safe_reboot`
 - `bookworm.sh` schedules a separate `finalize` state; `finalize.sh` runs final slim cleanup and clears the state marker
