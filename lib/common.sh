@@ -244,8 +244,20 @@ ensure_rc_local_continuation() {
     fi
 
     if [[ -f "$UCK_RC_LOCAL" ]] &&
-       grep -Fq "$UCK_RC_LOCAL_MARKER" "$UCK_RC_LOCAL" &&
-       grep -Fq "$continuation_cmd" "$UCK_RC_LOCAL"; then
+       awk -v marker="$UCK_RC_LOCAL_MARKER" -v cmd="$continuation_cmd" '
+           /^[[:space:]]*exit[[:space:]]+0[[:space:]]*$/ {
+               saw_exit = 1
+           }
+           !saw_exit && index($0, marker) {
+               marker_ok = 1
+           }
+           !saw_exit && index($0, cmd) {
+               cmd_ok = 1
+           }
+           END {
+               exit !(marker_ok && cmd_ok)
+           }
+       ' "$UCK_RC_LOCAL"; then
         if [[ -x "$UCK_RC_LOCAL" ]]; then
             return 0
         fi
