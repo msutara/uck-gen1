@@ -147,6 +147,21 @@ fi
 
 if [[ -z "$state" ]]; then
     log "Latest tested version installed — nothing to do."
+elif [[ "$DRY_RUN" == true ]]; then
+    # In dry-run mode, simulate all stages sequentially without rebooting.
+    readonly STAGE_ORDER=(jessie stretch buster bullseye bookworm finalize)
+    started=false
+    for stage in "${STAGE_ORDER[@]}"; do
+        if [[ "$started" == false ]]; then
+            if [[ "$stage" == "$state" ]]; then
+                started=true
+            else
+                continue
+            fi
+        fi
+        log "Starting upgrade stage: $stage"
+        "$stage"
+    done
 else
     log "Starting upgrade stage: $state"
     "$state"
