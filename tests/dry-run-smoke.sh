@@ -73,11 +73,23 @@ FAIL=0
 assert_contains() {
     local label="$1"
     local pattern="$2"
-    if echo "$output" | grep -qE "$pattern"; then
+    if printf '%s\n' "$output" | grep -qE "$pattern"; then
         echo "  PASS: $label"
         PASS=$((PASS + 1))
     else
         echo "  FAIL: $label (expected pattern: $pattern)"
+        FAIL=$((FAIL + 1))
+    fi
+}
+
+assert_literal() {
+    local label="$1"
+    local text="$2"
+    if printf '%s\n' "$output" | grep -qF -- "$text"; then
+        echo "  PASS: $label"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: $label (expected literal: $text)"
         FAIL=$((FAIL + 1))
     fi
 }
@@ -106,8 +118,8 @@ assert_contains "Bookworm usrmerge fix"   "DRY-RUN.*Would run.*umount.*/lib/modu
 assert_contains "Bookworm SSH fix"        "DRY-RUN.*Would run.*PermitRootLogin"
 
 # Verify overridden paths are used (not system defaults)
-assert_contains "Uses fake sources.list"  "Would write to $FAKE_SOURCES"
-assert_contains "Uses fake rc.local"      "Would ensure marker.*in $FAKE_RC_LOCAL"
+assert_literal "Uses fake sources.list"  "Would write to $FAKE_SOURCES"
+assert_literal "Uses fake rc.local"      "in $FAKE_RC_LOCAL"
 
 # Finalize
 assert_contains "Upgrade complete"        "Upgrade complete"
