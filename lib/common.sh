@@ -245,7 +245,7 @@ ensure_rc_local_continuation() {
 
     if [[ -f "$UCK_RC_LOCAL" ]] &&
        awk -v marker="$UCK_RC_LOCAL_MARKER" -v cmd="$continuation_cmd" '
-           /^[[:space:]]*exit[[:space:]]+0[[:space:]]*$/ {
+           /^[ \t]*exit[ \t]+0[ \t]*$/ {
                saw_exit = 1
            }
            !saw_exit && index($0, marker) {
@@ -296,10 +296,10 @@ EOF
     sed -i '/UCK\/bin\/uck-upgrade/d' "$UCK_RC_LOCAL"
     sed -i '/UCK\/update\.sh/d' "$UCK_RC_LOCAL"
 
-    if grep -Eq "^[[:space:]]*exit[[:space:]]+0[[:space:]]*$" "$UCK_RC_LOCAL"; then
+    if grep -Eq '^[[:blank:]]*exit[[:blank:]]+0[[:blank:]]*$' "$UCK_RC_LOCAL"; then
         tmp_rc="$(mktemp)"
         awk -v marker="$UCK_RC_LOCAL_MARKER" -v cmd="$continuation_cmd" '
-            /^[[:space:]]*exit[[:space:]]+0[[:space:]]*$/ && !inserted {
+            /^[ \t]*exit[ \t]+0[ \t]*$/ && !inserted {
                 print marker
                 print cmd
                 inserted = 1

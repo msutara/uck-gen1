@@ -94,10 +94,10 @@ EOF
         sed -i '/UCK\/update\.sh/d' "$RC_LOCAL"
 
         # Insert before 'exit 0' if it exists, otherwise append
-        if grep -Eq "^[[:space:]]*exit[[:space:]]+0[[:space:]]*$" "$RC_LOCAL"; then
+        if grep -Eq '^[[:blank:]]*exit[[:blank:]]+0[[:blank:]]*$' "$RC_LOCAL"; then
             tmp_rc="$(mktemp)"
             awk -v marker="$RC_LOCAL_MARKER" -v cmd="$RC_LOCAL_CMD" '
-                /^[[:space:]]*exit[[:space:]]+0[[:space:]]*$/ && !inserted {
+                /^[ \t]*exit[ \t]+0[ \t]*$/ && !inserted {
                     print marker
                     print cmd
                     inserted = 1
