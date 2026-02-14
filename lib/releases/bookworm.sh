@@ -19,9 +19,9 @@ deb https://deb.debian.org/debian-security/ bookworm-security main contrib non-f
     # Bookworm defaults to PermitRootLogin prohibit-password; --force-confnew
     # overwrites sshd_config, locking out headless root-password access.
     log "Ensuring root SSH password login remains enabled..."
-    run sed -i -E 's/^[[:space:]]*#?[[:space:]]*PermitRootLogin[[:space:]].*/PermitRootLogin yes/' /etc/ssh/sshd_config
+    run sed -i -E 's/^[[:blank:]]*#?[[:blank:]]*PermitRootLogin[[:blank:]].*/PermitRootLogin yes/' /etc/ssh/sshd_config
     # Append directive if no PermitRootLogin line exists at all
-    run sh -c "grep -Eq '^[[:space:]]*PermitRootLogin[[:space:]]+' /etc/ssh/sshd_config || echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config"
+    run sh -c "grep -Eq '^[[:blank:]]*PermitRootLogin[[:blank:]]+' /etc/ssh/sshd_config || echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config"
 
     # Detect SSH service unit name (ssh or sshd) and reload safely.
     local ssh_unit=""
