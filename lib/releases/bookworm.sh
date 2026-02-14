@@ -4,6 +4,9 @@
 bookworm() {
     log "=== Starting Bookworm upgrade stage ==="
 
+    # Prevent usrmerge failure: /lib/modules may be a busy AUFS mount
+    run_optional umount /lib/modules
+
     write_sources_list "deb https://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
 deb https://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware
 deb https://deb.debian.org/debian-security/ bookworm-security main contrib non-free non-free-firmware"
