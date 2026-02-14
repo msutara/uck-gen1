@@ -9,8 +9,10 @@ jessie() {
 
     log "Removing UniFi and Ubiquiti packages..."
     run_optional dpkg -P unifi
-    run_optional dpkg -P freeradius-ldap freeradius-krb5 freeradius-mysql freeradius-postgresql freeradius-utils freeradius-common freeradius
+    # Purge dependants first, then the packages they depend on
     run_optional dpkg -P ubnt-freeradius-setup ubnt-unifi-setup ubnt-systemhub cloudkey-webui
+    run_optional dpkg -P freeradius-ldap freeradius-krb5 freeradius-mysql freeradius-postgresql freeradius-utils
+    run_optional dpkg -P freeradius freeradius-config freeradius-common
 
     log "Updating archive keyrings..."
     run apt-get install -y debian-archive-keyring
