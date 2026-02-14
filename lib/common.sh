@@ -221,6 +221,14 @@ load_state_options() {
     fi
 }
 
+detect_ssh_unit() {
+    if [[ -f /lib/systemd/system/ssh.service || -f /etc/systemd/system/ssh.service ]]; then
+        echo "ssh"
+    elif [[ -f /lib/systemd/system/sshd.service || -f /etc/systemd/system/sshd.service ]]; then
+        echo "sshd"
+    fi
+}
+
 ensure_ssh_continuity() {
     local ssh_service=""
 
@@ -234,11 +242,7 @@ ensure_ssh_continuity() {
         run apt-get -qy install openssh-server
     fi
 
-    if [[ -f /lib/systemd/system/ssh.service || -f /etc/systemd/system/ssh.service ]]; then
-        ssh_service="ssh"
-    elif [[ -f /lib/systemd/system/sshd.service || -f /etc/systemd/system/sshd.service ]]; then
-        ssh_service="sshd"
-    fi
+    ssh_service="$(detect_ssh_unit)"
 
     if [[ -z "$ssh_service" ]]; then
         log_error "Could not find SSH service unit (ssh.service or sshd.service). Refusing to reboot."
