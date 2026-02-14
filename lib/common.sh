@@ -61,7 +61,24 @@ run_optional() {
 
 # --- APT helpers ---
 
+# Disable any Ubiquiti dpkg/apt hooks that break across major releases.
+disable_ubnt_hooks() {
+    local f
+    for f in /etc/apt/apt.conf.d/*ubnt* /etc/dpkg/dpkg.cfg.d/*ubnt*; do
+        if [[ -f "$f" ]]; then
+            if [[ "$DRY_RUN" == true ]]; then
+                log "[DRY-RUN] Would disable hook: $f"
+            elif mv "$f" "${f}.disabled" 2>/dev/null; then
+                log "Disabled hook: $f"
+            else
+                log_error "Failed to disable hook: $f — apt may fail"
+            fi
+        fi
+    done
+}
+
 apt_upgrade() {
+    disable_ubnt_hooks
     run apt-get -qy update
     run apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
     run apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade
@@ -297,7 +314,7 @@ EOF
     sed -i '/UCK\/update\.sh/d' "$UCK_RC_LOCAL"
 
     if grep -Eq '^[[:blank:]]*exit[[:blank:]]+0[[:blank:]]*$' "$UCK_RC_LOCAL"; then
-        tmp_rc="$(mktemp)"
+        tmp_rc="$(mktemp /etc/rc.local.XXXXXX)"
         awk -v marker="$UCK_RC_LOCAL_MARKER" -v cmd="$continuation_cmd" '
             /^[ \t]*exit[ \t]+0[ \t]*$/ && !inserted {
                 print marker
@@ -306,8 +323,7 @@ EOF
             }
             { print }
         ' "$UCK_RC_LOCAL" > "$tmp_rc"
-        cat "$tmp_rc" > "$UCK_RC_LOCAL"
-        rm -f "$tmp_rc"
+        mv "$tmp_rc" "$UCK_RC_LOCAL"
     else
         echo "" >> "$UCK_RC_LOCAL"
         echo "$UCK_RC_LOCAL_MARKER" >> "$UCK_RC_LOCAL"
