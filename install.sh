@@ -71,7 +71,10 @@ else
 fi
 
 # Set up rc.local
-if [[ -f "$RC_LOCAL" ]] && grep -q "$RC_LOCAL_MARKER" "$RC_LOCAL"; then
+if [[ -f "$RC_LOCAL" ]] &&
+   grep -Fq "$RC_LOCAL_MARKER" "$RC_LOCAL" &&
+   grep -Fq "$RC_LOCAL_CMD" "$RC_LOCAL" &&
+   [[ -x "$RC_LOCAL" ]]; then
     echo "rc.local already configured — skipping."
 else
     echo "Configuring $RC_LOCAL ..."
@@ -86,6 +89,10 @@ $RC_LOCAL_CMD
 exit 0
 EOF
     else
+        sed -i "\|$RC_LOCAL_MARKER|d" "$RC_LOCAL"
+        sed -i '/UCK\/bin\/uck-upgrade/d' "$RC_LOCAL"
+        sed -i '/UCK\/update\.sh/d' "$RC_LOCAL"
+
         # Insert before 'exit 0' if it exists, otherwise append
         if grep -Eq "^[[:space:]]*exit[[:space:]]+0[[:space:]]*$" "$RC_LOCAL"; then
             tmp_rc="$(mktemp)"

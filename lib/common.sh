@@ -4,6 +4,8 @@
 
 readonly UCK_LOG_FILE="/var/log/uck-upgrade.log"
 readonly UCK_SOURCES_LIST="/etc/apt/sources.list"
+readonly UCK_RC_LOCAL="/etc/rc.local"
+readonly UCK_RC_LOCAL_MARKER="# UCK-GEN1-UPGRADE"
 # shellcheck disable=SC2034  # used by bin/uck-upgrade which sources this file
 readonly UCK_VERSION="2.0.0"
 
@@ -199,6 +201,77 @@ load_state_options() {
     fi
 }
 
+# Ensure rc.local always contains the continuation command while upgrade is in progress.
+ensure_rc_local_continuation() {
+    local continuation_cmd="$1"
+    local tmp_rc=""
+
+    if [[ -z "$continuation_cmd" ]]; then
+        return 0
+    fi
+
+    if [[ -f "$UCK_RC_LOCAL" ]] &&
+       grep -Fq "$UCK_RC_LOCAL_MARKER" "$UCK_RC_LOCAL" &&
+       grep -Fq "$continuation_cmd" "$UCK_RC_LOCAL"; then
+        if [[ -x "$UCK_RC_LOCAL" ]]; then
+            return 0
+        fi
+
+        log "Fixing execute permissions on $UCK_RC_LOCAL"
+        if [[ "$DRY_RUN" == true ]]; then
+            log "[DRY-RUN] Would run: chmod +x $UCK_RC_LOCAL"
+        else
+            chmod +x "$UCK_RC_LOCAL"
+        fi
+        return 0
+    fi
+
+    log "Ensuring reboot continuation hook in $UCK_RC_LOCAL"
+
+    if [[ "$DRY_RUN" == true ]]; then
+        log "[DRY-RUN] Would ensure marker '$UCK_RC_LOCAL_MARKER' and command '$continuation_cmd' in $UCK_RC_LOCAL"
+        return 0
+    fi
+
+    if [[ ! -f "$UCK_RC_LOCAL" ]]; then
+        cat <<EOF > "$UCK_RC_LOCAL"
+#!/bin/sh -e
+# rc.local — executed at the end of each multiuser runlevel.
+
+$UCK_RC_LOCAL_MARKER
+$continuation_cmd
+
+exit 0
+EOF
+        chmod +x "$UCK_RC_LOCAL"
+        return 0
+    fi
+
+    sed -i "\|$UCK_RC_LOCAL_MARKER|d" "$UCK_RC_LOCAL"
+    sed -i '/UCK\/bin\/uck-upgrade/d' "$UCK_RC_LOCAL"
+    sed -i '/UCK\/update\.sh/d' "$UCK_RC_LOCAL"
+
+    if grep -Eq "^[[:space:]]*exit[[:space:]]+0[[:space:]]*$" "$UCK_RC_LOCAL"; then
+        tmp_rc="$(mktemp)"
+        awk -v marker="$UCK_RC_LOCAL_MARKER" -v cmd="$continuation_cmd" '
+            /^[[:space:]]*exit[[:space:]]+0[[:space:]]*$/ && !inserted {
+                print marker
+                print cmd
+                inserted = 1
+            }
+            { print }
+        ' "$UCK_RC_LOCAL" > "$tmp_rc"
+        cat "$tmp_rc" > "$UCK_RC_LOCAL"
+        rm -f "$tmp_rc"
+    else
+        echo "" >> "$UCK_RC_LOCAL"
+        echo "$UCK_RC_LOCAL_MARKER" >> "$UCK_RC_LOCAL"
+        echo "$continuation_cmd" >> "$UCK_RC_LOCAL"
+    fi
+
+    chmod +x "$UCK_RC_LOCAL"
+}
+
 # --- Safety checks ---
 
 check_root() {
@@ -220,6 +293,9 @@ check_network() {
 # --- Reboot ---
 
 safe_reboot() {
+    if [[ -n "${UCK_CONTINUATION_CMD:-}" ]]; then
+        ensure_rc_local_continuation "$UCK_CONTINUATION_CMD"
+    fi
     log "Stage complete. Rebooting to continue upgrade..."
     if [[ "$DRY_RUN" == true ]]; then
         log "[DRY-RUN] Would reboot now"

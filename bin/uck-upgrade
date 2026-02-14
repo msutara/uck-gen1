@@ -14,6 +14,8 @@ LIB_DIR="$(cd "$SCRIPT_DIR/../lib" && pwd)"
 # shellcheck source=../lib/common.sh
 source "$LIB_DIR/common.sh"
 
+UCK_CONTINUATION_CMD="bash $SCRIPT_DIR/uck-upgrade"
+
 # Source all release scripts
 for release_script in "$LIB_DIR"/releases/*.sh; do
     # shellcheck source=/dev/null
@@ -129,6 +131,10 @@ load_state_options
 state="$(get_current_state)"
 if [[ -z "$state" && -n "$bootstrap_state" ]]; then
     state="$bootstrap_state"
+fi
+
+if [[ -n "$state" ]]; then
+    ensure_rc_local_continuation "$UCK_CONTINUATION_CMD"
 fi
 
 if [[ -n "$state" && "$state" != "finalize" ]]; then
