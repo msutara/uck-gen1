@@ -68,7 +68,7 @@ disable_ubnt_hooks() {
         if [[ -f "$f" ]]; then
             if [[ "$DRY_RUN" == true ]]; then
                 log "[DRY-RUN] Would disable hook: $f"
-            elif mv "$f" "${f}.disabled" 2>/dev/null; then
+            elif mv "$f" "${f}.disabled"; then
                 log "Disabled hook: $f"
             else
                 log_error "Failed to disable hook: $f — apt may fail"
@@ -327,8 +327,14 @@ EOF
             }
             { print }
         ' "$UCK_RC_LOCAL" > "$tmp_rc"
-        mv "$tmp_rc" "$UCK_RC_LOCAL"
-        trap - EXIT
+        if mv "$tmp_rc" "$UCK_RC_LOCAL"; then
+            trap - EXIT
+        else
+            rm -f "$tmp_rc"
+            trap - EXIT
+            log_error "Failed to update $UCK_RC_LOCAL"
+            return 1
+        fi
     else
         echo "" >> "$UCK_RC_LOCAL"
         echo "$UCK_RC_LOCAL_MARKER" >> "$UCK_RC_LOCAL"
