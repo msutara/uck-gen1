@@ -317,6 +317,8 @@ EOF
 
     if grep -Eq '^[[:blank:]]*exit[[:blank:]]+0[[:blank:]]*$' "$UCK_RC_LOCAL"; then
         tmp_rc="$(mktemp /etc/rc.local.XXXXXX)"
+        # shellcheck disable=SC2064
+        trap "rm -f '$tmp_rc'" EXIT
         awk -v marker="$UCK_RC_LOCAL_MARKER" -v cmd="$continuation_cmd" '
             /^[ \t]*exit[ \t]+0[ \t]*$/ && !inserted {
                 print marker
@@ -326,6 +328,7 @@ EOF
             { print }
         ' "$UCK_RC_LOCAL" > "$tmp_rc"
         mv "$tmp_rc" "$UCK_RC_LOCAL"
+        trap - EXIT
     else
         echo "" >> "$UCK_RC_LOCAL"
         echo "$UCK_RC_LOCAL_MARKER" >> "$UCK_RC_LOCAL"

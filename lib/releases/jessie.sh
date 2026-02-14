@@ -7,8 +7,10 @@ jessie() {
 
     run_optional find /etc/apt/sources.list.d -mindepth 1 -maxdepth 1 -exec rm -rfv {} +
 
-    log "Removing UniFi packages..."
+    log "Removing UniFi and Ubiquiti packages..."
     run_optional dpkg -P unifi
+    run_optional dpkg -P freeradius-ldap freeradius-krb5 freeradius-mysql freeradius-postgresql freeradius-utils freeradius-common freeradius
+    run_optional dpkg -P ubnt-freeradius-setup ubnt-unifi-setup ubnt-systemhub cloudkey-webui
 
     log "Updating archive keyrings..."
     run apt-get install -y debian-archive-keyring
