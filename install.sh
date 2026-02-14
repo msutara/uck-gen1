@@ -72,9 +72,12 @@ fi
 
 # Set up rc.local
 if [[ -f "$RC_LOCAL" ]] &&
-   grep -Fq "$RC_LOCAL_MARKER" "$RC_LOCAL" &&
-   grep -Fq "$RC_LOCAL_CMD" "$RC_LOCAL" &&
-   [[ -x "$RC_LOCAL" ]]; then
+   [[ -x "$RC_LOCAL" ]] &&
+   awk -v marker="$RC_LOCAL_MARKER" -v cmd="$RC_LOCAL_CMD" '
+       /^[ \t]*exit[ \t]+0[ \t]*$/ { exit }
+       { if (index($0, marker)) m=1; if (index($0, cmd)) c=1 }
+       END { exit !(m && c) }
+   ' "$RC_LOCAL"; then
     echo "rc.local already configured — skipping."
 else
     echo "Configuring $RC_LOCAL ..."
