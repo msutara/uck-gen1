@@ -380,6 +380,13 @@ safe_reboot() {
 
     if [[ -n "${UCK_CONTINUATION_CMD:-}" ]]; then
         ensure_rc_local_continuation "$UCK_CONTINUATION_CMD"
+
+        # On stretch+ rc-local.service may be disabled after a dist-upgrade,
+        # which prevents /etc/rc.local from executing on boot.
+        if [[ -f /lib/systemd/system/rc-local.service ]] ||
+           [[ -f /etc/systemd/system/rc-local.service ]]; then
+            run systemctl enable rc-local.service
+        fi
     fi
     log "Stage complete. Rebooting to continue upgrade..."
     if [[ "$DRY_RUN" == true ]]; then
