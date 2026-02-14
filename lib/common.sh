@@ -294,7 +294,6 @@ ensure_rc_local_continuation() {
 
     if [[ "$DRY_RUN" == true ]]; then
         log "[DRY-RUN] Would ensure marker '$UCK_RC_LOCAL_MARKER' and command '$continuation_cmd' in $UCK_RC_LOCAL"
-        log "[DRY-RUN] Would enable rc-local.service if systemd is present"
         return 0
     fi
 
@@ -337,11 +336,6 @@ EOF
     fi
 
     chmod +x "$UCK_RC_LOCAL"
-
-    # Ensure rc-local.service is enabled (stretch+ may disable it after upgrades)
-    if command -v systemctl &>/dev/null; then
-        systemctl enable rc-local.service 2>/dev/null || true
-    fi
 }
 
 # --- Safety checks ---
@@ -354,12 +348,23 @@ check_root() {
 }
 
 # Require at least one Debian mirror to be reachable.
+# Retries with backoff since rc.local may run before networking is fully up.
 check_network() {
-    if ! ping -c 1 -W 5 deb.debian.org &>/dev/null &&
-       ! ping -c 1 -W 5 archive.debian.org &>/dev/null; then
-        log_error "Cannot reach Debian mirrors — check network connectivity"
-        exit 1
-    fi
+    local attempt max_attempts=12 wait_secs=10
+
+    for (( attempt=1; attempt<=max_attempts; attempt++ )); do
+        if ping -c 1 -W 5 deb.debian.org &>/dev/null ||
+           ping -c 1 -W 5 archive.debian.org &>/dev/null; then
+            return 0
+        fi
+        if (( attempt < max_attempts )); then
+            log "Network not ready, retrying in ${wait_secs}s (attempt $attempt/$max_attempts)..."
+            sleep "$wait_secs"
+        fi
+    done
+
+    log_error "Cannot reach Debian mirrors after $max_attempts attempts — check network connectivity"
+    exit 1
 }
 
 # --- Reboot ---
