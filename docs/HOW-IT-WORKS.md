@@ -5,8 +5,11 @@
 The script upgrades through Debian releases sequentially:
 
 ```txt
-Jessie (8) → Stretch (9) → Buster (10) → Bullseye (11) → Bookworm (12) → Finalize
+Jessie (8) → Stretch (9) → Buster (10) → Bullseye (11) → Finalize
 ```
+
+Bullseye is the final target — Bookworm (Debian 12) is incompatible with UCK Gen1 hardware.
+See [BOOKWORM-FINDINGS.md](BOOKWORM-FINDINGS.md) for details.
 
 Each step requires a reboot. The script is designed to resume automatically after each reboot via `/etc/rc.local`.
 
@@ -32,9 +35,8 @@ The upgrade progress is tracked using a comment on the last line of `/etc/apt/so
 sources.list ends with "# jessie"   → jessie()   → set_next_state("jessie")   → apt upgrade → transition_state("stretch")  → reboot
 sources.list ends with "# stretch"  → stretch()  → set_next_state("stretch")  → apt upgrade → transition_state("buster")   → reboot
 sources.list ends with "# buster"   → buster()   → set_next_state("buster")   → apt upgrade → transition_state("bullseye") → reboot
-sources.list ends with "# bullseye" → bullseye() → set_next_state("bullseye") → apt upgrade → transition_state("bookworm") → reboot
-sources.list ends with "# bookworm" → bookworm() → set_next_state("bookworm") → apt upgrade → transition_state("finalize") → reboot
-sources.list ends with "# finalize" → finalize() → set_next_state("finalize") → finalize()  → clear marker                → done
+sources.list ends with "# bullseye" → bullseye() → set_next_state("bullseye") → apt upgrade → transition_state("finalize") → reboot
+sources.list ends with "# finalize" → finalize() → final slim + cleanup      → clear marker                → done
 ```
 
 ## Initial Jessie Detection
@@ -69,6 +71,5 @@ lib/releases/jessie.sh   Jessie-specific upgrade logic
 lib/releases/stretch.sh  Stretch upgrade logic
 lib/releases/buster.sh   Buster upgrade logic
 lib/releases/bullseye.sh Bullseye upgrade logic
-lib/releases/bookworm.sh Bookworm upgrade logic
 lib/releases/finalize.sh Final cleanup (slim + apt cleanup)
 ```

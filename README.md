@@ -5,10 +5,13 @@ Headless Debian upgrade for Ubiquiti UniFi Cloud Key Gen1.
 Automatically upgrades through Debian releases across reboots:
 
 ```txt
-Jessie (8) → Stretch (9) → Buster (10) → Bullseye (11) → Bookworm (12)
+Jessie (8) → Stretch (9) → Buster (10) → Bullseye (11)
 ```
 
-After Bookworm, the script runs one final cleanup stage for slimming.
+> **Bullseye (Debian 11) is the final target** — Bookworm (Debian 12) is
+> [incompatible with UCK Gen1 hardware](docs/BOOKWORM-FINDINGS.md).
+> After the final release upgrade, the script runs a cleanup stage that slims
+> the installation by purging optional packages.
 
 ## Quick Start
 
@@ -32,6 +35,7 @@ sudo bash ~/UCK/bin/uck-upgrade --status
 ## Features
 
 - **Fully automated** — runs unattended across multiple reboots
+- **Safe target** — upgrades to Bullseye, the last release compatible with UCK Gen1
 - **Dry-run mode** — preview changes with `--dry-run` before committing
 - **Default slim mode** — purges optional packages on final stage (`--keep-packages` to skip)
 - **Persistent logging** — full history in `/var/log/uck-upgrade.log`
@@ -42,6 +46,7 @@ sudo bash ~/UCK/bin/uck-upgrade --status
 - [Usage Guide](docs/USAGE.md) — installation, CLI options, and uninstalling
 - [How It Works](docs/HOW-IT-WORKS.md) — architecture and state machine design
 - [Troubleshooting](docs/TROUBLESHOOTING.md) — common issues and recovery steps
+- [Bookworm Findings](docs/BOOKWORM-FINDINGS.md) — why Bookworm is not supported
 
 ## ⚠️ Warning
 

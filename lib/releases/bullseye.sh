@@ -1,5 +1,7 @@
 #!/bin/bash
-# Bullseye → Bookworm upgrade stage
+# Bullseye — final upgrade stage (Debian 11)
+# Bookworm (Debian 12) is not supported on UCK Gen1 due to AUFS/usrmerge
+# incompatibility. See docs/BOOKWORM-FINDINGS.md for details.
 
 bullseye() {
     log "=== Starting Bullseye upgrade stage ==="
@@ -11,6 +13,6 @@ deb https://deb.debian.org/debian-security/ bullseye-security main contrib non-f
 
     apt_upgrade
     apt_cleanup
-    transition_state "bookworm"
+    transition_state "finalize"
     safe_reboot
 }

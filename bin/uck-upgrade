@@ -2,7 +2,7 @@
 # UCK Gen1 Debian Upgrade — Main Entrypoint
 #
 # Upgrades a Ubiquiti Cloud Key Gen1 through Debian releases:
-# Jessie → Stretch → Buster → Bullseye → Bookworm
+# Jessie → Stretch → Buster → Bullseye
 #
 # See docs/HOW-IT-WORKS.md for architecture details.
 
@@ -33,7 +33,7 @@ usage() {
 Usage: uck-upgrade [OPTIONS]
 
 Headless Debian upgrade for Ubiquiti Cloud Key Gen1.
-Upgrades through: Jessie → Stretch → Buster → Bullseye → Bookworm
+Upgrades through: Jessie → Stretch → Buster → Bullseye
 
 Options:
   --dry-run     Show what would happen without making changes
@@ -149,7 +149,7 @@ if [[ -z "$state" ]]; then
     log "Latest tested version installed — nothing to do."
 elif [[ "$DRY_RUN" == true ]]; then
     # In dry-run mode, simulate all stages sequentially without rebooting.
-    readonly STAGE_ORDER=(jessie stretch buster bullseye bookworm finalize)
+    readonly STAGE_ORDER=(jessie stretch buster bullseye finalize)
     started=false
     for stage in "${STAGE_ORDER[@]}"; do
         if [[ "$started" == false ]]; then

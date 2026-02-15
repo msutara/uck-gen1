@@ -12,13 +12,15 @@ readonly UCK_VERSION="2.0.0"
 DRY_RUN=false
 KEEP_PACKAGES=false
 
+# Regex matching a state marker line: "# <release> [options...]"
+# Options are space-separated tokens: keep-packages
+readonly UCK_STATE_REGEX='^#[[:space:]]*(jessie|stretch|buster|bullseye|finalize)(([[:space:]]+(keep-packages))*)$'
+
 state_marker_line() {
     local release="$1"
-    if [[ "$KEEP_PACKAGES" == true ]]; then
-        echo "# $release keep-packages"
-    else
-        echo "# $release"
-    fi
+    local opts=""
+    [[ "$KEEP_PACKAGES" == true ]] && opts="$opts keep-packages"
+    echo "# ${release}${opts}"
 }
 
 # --- Logging ---
@@ -174,7 +176,7 @@ transition_state() {
     fi
 
     last_line="$(tail -1 "$UCK_SOURCES_LIST" 2>/dev/null || true)"
-    if [[ "$last_line" =~ ^#[[:space:]]*(jessie|stretch|buster|bullseye|bookworm|finalize)([[:space:]]+keep-packages)?$ ]]; then
+    if [[ "$last_line" =~ $UCK_STATE_REGEX ]]; then
         tmp_file="$(mktemp)"
         head -n -1 "$UCK_SOURCES_LIST" > "$tmp_file"
         echo "$marker" >> "$tmp_file"
@@ -190,7 +192,7 @@ clear_state_marker() {
     local last_line=""
     while true; do
         last_line="$(tail -1 "$UCK_SOURCES_LIST" 2>/dev/null || true)"
-        if [[ ! "$last_line" =~ ^#[[:space:]]*(jessie|stretch|buster|bullseye|bookworm|finalize)([[:space:]]+keep-packages)?$ ]]; then
+        if [[ ! "$last_line" =~ $UCK_STATE_REGEX ]]; then
             break
         fi
         if [[ "$DRY_RUN" == true ]]; then
@@ -205,7 +207,7 @@ get_current_state() {
     local last_line=""
     last_line="$(tail -1 "$UCK_SOURCES_LIST" 2>/dev/null || true)"
 
-    if [[ "$last_line" =~ ^#[[:space:]]*(jessie|stretch|buster|bullseye|bookworm|finalize)([[:space:]]+keep-packages)?$ ]]; then
+    if [[ "$last_line" =~ $UCK_STATE_REGEX ]]; then
         echo "${BASH_REMATCH[1]}"
     fi
     return 0
@@ -215,9 +217,13 @@ load_state_options() {
     local last_line=""
     last_line="$(tail -1 "$UCK_SOURCES_LIST" 2>/dev/null || true)"
 
-    if [[ "$last_line" =~ ^#[[:space:]]*(jessie|stretch|buster|bullseye|bookworm|finalize)([[:space:]]+keep-packages)?$ ]] && [[ -n "${BASH_REMATCH[2]}" ]]; then
-        KEEP_PACKAGES=true
-        log "Detected persisted keep-packages mode from state marker."
+    if [[ "$last_line" =~ $UCK_STATE_REGEX ]] && [[ -n "${BASH_REMATCH[2]}" ]]; then
+        local opts="${BASH_REMATCH[2]}"
+        # Options are already validated by UCK_STATE_REGEX to be exact tokens
+        if [[ " $opts " == *" keep-packages "* ]]; then
+            KEEP_PACKAGES=true
+            log "Detected persisted keep-packages mode from state marker."
+        fi
     fi
 }
 

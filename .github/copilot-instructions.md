@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Headless Debian upgrade tool for Ubiquiti UniFi Cloud Key Gen1. Upgrades through Debian releases (Jessie → Stretch → Buster → Bullseye → Bookworm), rebooting between each step.
+Headless Debian upgrade tool for Ubiquiti UniFi Cloud Key Gen1. Upgrades through Debian releases (Jessie → Stretch → Buster → Bullseye), rebooting between each step. Bullseye (Debian 11) is the final target — Bookworm is incompatible with UCK Gen1 hardware.
 
 ## Architecture
 
@@ -22,7 +22,7 @@ Headless Debian upgrade tool for Ubiquiti UniFi Cloud Key Gen1. Upgrades through
 - Grep patterns that match whitespace-sensitive lines (e.g. `exit 0`) should prefer `[[:blank:]]` for POSIX portability
 - `jessie.sh` is unique: it purges UniFi/Ubiquiti/freeradius packages (dependants first) and disables services before upgrading
 - Each release function follows the pattern: `write_sources_list` → `set_next_state(current)` → `apt_upgrade` → optional `apt_cleanup` → `transition_state(next)` → `safe_reboot`
-- `bookworm.sh` schedules a separate `finalize` state; `finalize.sh` runs final slim cleanup and clears the state marker
+- `bullseye.sh` transitions to `finalize` state; `finalize.sh` runs final slim cleanup and clears the state marker
 - Final stage runs slim-mode purge by default; use `--keep-packages` to opt out (persisted via state marker across reboots)
 
 ## Safety & Self-Healing
@@ -32,12 +32,12 @@ Headless Debian upgrade tool for Ubiquiti UniFi Cloud Key Gen1. Upgrades through
 - **Network retry**: `check_network()` retries up to 12 times with 10s delays (2 min total) since rc.local runs before networking is fully up.
 - **Ubiquiti hook disabling**: `disable_ubnt_hooks()` renames `/etc/apt/apt.conf.d/*ubnt*` and `/etc/dpkg/dpkg.cfg.d/*ubnt*` to `.disabled` before each `apt_upgrade` to prevent cross-release breakage.
 - **Broken dependency repair**: `apt_upgrade()` runs `dpkg --configure -a` and `apt-get --fix-broken install` before every upgrade/dist-upgrade.
-- **Bookworm-specific**: Unmounts `/lib/modules` before upgrade (AUFS usrmerge fix) and forces `PermitRootLogin yes` after upgrade (headless root access).
+- **Bookworm not supported**: Bookworm (Debian 12) is incompatible with UCK Gen1 hardware; see `docs/BOOKWORM-FINDINGS.md`.
 - **Buster EOL**: Uses `archive.debian.org` mirrors since Buster is end-of-life.
 
 ## Dry-Run Mode
 
-- `--dry-run` simulates all upgrade stages sequentially (jessie → finalize) without rebooting, showing every command that would execute.
+- `--dry-run` simulates all upgrade stages sequentially without rebooting, showing every command that would execute.
 - All `run`, `run_optional`, `write_sources_list`, `set_next_state`, `transition_state`, and `safe_reboot` respect the `DRY_RUN` flag.
 
 ## Testing

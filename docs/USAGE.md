@@ -11,7 +11,8 @@ sudo bash /tmp/uck-gen1-main/install.sh
 sudo reboot
 ```
 
-The upgrade will proceed automatically through each reboot.
+The upgrade will proceed automatically through each reboot:
+Jessie → Stretch → Buster → Bullseye.
 
 ## Command-Line Options
 
@@ -61,7 +62,9 @@ cat /var/log/uck-upgrade.log
 
 ## Slim Mode
 
-By default, a dedicated final cleanup stage (after Bookworm) purges optional packages to keep the OS slim (for example: UniFi app stack, Java runtime, nginx/php-fpm, and setup helpers when present).
+By default, a dedicated final cleanup stage (after the final target release)
+purges optional packages to keep the OS slim (for example: UniFi app stack,
+Java runtime, nginx/php-fpm, and setup helpers when present).
 
 If you want to keep those optional packages, run with:
 
