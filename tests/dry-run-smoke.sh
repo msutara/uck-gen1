@@ -101,7 +101,6 @@ assert_contains "Jessie stage runs"       "Starting upgrade stage: jessie"
 assert_contains "Stretch stage runs"      "Starting upgrade stage: stretch"
 assert_contains "Buster stage runs"       "Starting upgrade stage: buster"
 assert_contains "Bullseye stage runs"     "Starting upgrade stage: bullseye"
-assert_contains "Bookworm stage runs"     "Starting upgrade stage: bookworm"
 assert_contains "Finalize stage runs"     "Starting upgrade stage: finalize"
 
 # Key operations must be logged
@@ -112,10 +111,6 @@ assert_contains "apt-get upgrade"         "DRY-RUN.*Would run.*apt-get.*[^-]upgr
 assert_contains "apt-get dist-upgrade"    "DRY-RUN.*Would run.*dist-upgrade"
 assert_contains "Jessie bootstrap"        "DRY-RUN.*Bootstrapping initial state.*jessie"
 assert_contains "rc.local hook"           "DRY-RUN.*Would ensure marker"
-
-# Bookworm-specific
-assert_contains "Bookworm usrmerge fix"   "DRY-RUN.*Would run.*umount.*/lib/modules"
-assert_contains "Bookworm SSH fix"        "DRY-RUN.*Would run.*PermitRootLogin"
 
 # Verify overridden paths are used (not system defaults)
 assert_literal "Uses fake sources.list"  "Would write to $FAKE_SOURCES"

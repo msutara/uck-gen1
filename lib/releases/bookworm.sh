@@ -1,38 +1,20 @@
 #!/bin/bash
-# Bookworm — final upgrade stage (Debian 12)
+# Bookworm (Debian 12) — NOT SUPPORTED on UCK Gen1
+#
+# The UCK Gen1 uses an AUFS overlay root filesystem which is incompatible
+# with Debian's usrmerge package. Bookworm requires merged /usr (/bin → /usr/bin,
+# /sbin → /usr/sbin, /lib → /usr/lib) but AUFS returns EBUSY when attempting
+# to rename these top-level directories. Without merged /usr, systemd binaries
+# in /bin/ remain at the old version and crash against the new libsystemd-shared,
+# rendering the system unbootable after reboot.
+#
+# See docs/BOOKWORM-FINDINGS.md for detailed field testing results.
+#
+# This file is kept as a stub so the release module loader does not break.
+# The bookworm() function is never called in normal operation.
 
 bookworm() {
-    log "=== Starting Bookworm upgrade stage ==="
-
-    # Prevent usrmerge failure: /lib/modules may be a busy AUFS mount
-    run_optional umount /lib/modules
-
-    write_sources_list "deb https://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
-deb https://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware
-deb https://deb.debian.org/debian-security/ bookworm-security main contrib non-free non-free-firmware"
-
-    # Keep a resumable marker for this stage in case interruption occurs.
-    set_next_state "bookworm"
-
-    apt_upgrade
-
-    # Bookworm defaults to PermitRootLogin prohibit-password; --force-confnew
-    # overwrites sshd_config, locking out headless root-password access.
-    log "Ensuring root SSH password login remains enabled..."
-    run sed -i -E 's/^[[:blank:]]*#?[[:blank:]]*PermitRootLogin[[:blank:]].*/PermitRootLogin yes/' /etc/ssh/sshd_config
-    # Append directive if no PermitRootLogin line exists at all
-    run sh -c "grep -Eq '^[[:blank:]]*PermitRootLogin[[:blank:]]+' /etc/ssh/sshd_config || echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config"
-
-    # Detect SSH service unit name (ssh or sshd) and reload safely.
-    local ssh_unit=""
-    ssh_unit="$(detect_ssh_unit)"
-    if [[ -n "$ssh_unit" ]]; then
-        run systemctl reload-or-restart "$ssh_unit"
-    else
-        log_error "No ssh/sshd systemd unit found; skipping SSH reload."
-    fi
-
-    transition_state "finalize"
-    log "=== Bookworm upgrade complete; final cleanup scheduled ==="
-    safe_reboot
+    log_error "Bookworm upgrade is not supported on UCK Gen1 (AUFS/usrmerge incompatibility)."
+    log_error "See docs/BOOKWORM-FINDINGS.md for details."
+    exit 1
 }
