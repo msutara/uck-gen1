@@ -87,6 +87,8 @@ apt_upgrade() {
     run_optional apt-get -qy -o "Dpkg::Options::=--force-confnew" --fix-broken install
     run apt-get -qy -o "Dpkg::Options::=--force-confnew" upgrade
     run apt-get -qy -o "Dpkg::Options::=--force-confnew" dist-upgrade
+    # Free disk space by purging the APT download cache after each stage.
+    run_optional apt-get -qy clean
 }
 
 apt_cleanup() {

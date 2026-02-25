@@ -98,6 +98,45 @@ Bookworm (Debian 12) is incompatible with UCK Gen1 hardware. Bullseye
 (Debian 11) is the final supported target. See
 [BOOKWORM-FINDINGS.md](BOOKWORM-FINDINGS.md) for details.
 
+## Low Disk Space During Upgrade
+
+The UCK Gen1 has limited internal storage. Each `dist-upgrade` downloads
+hundreds of megabytes of packages to `/var/cache/apt/archives/`. The upgrade
+tool automatically runs `apt-get clean` after every stage to purge the
+download cache and reclaim space.
+
+If the device still runs out of space mid-upgrade:
+
+1. Clear the APT cache manually:
+
+   ```bash
+   sudo apt-get clean
+   ```
+
+2. Remove old logs if they are large:
+
+   ```bash
+   sudo truncate -s 0 /var/log/uck-upgrade.log
+   sudo journalctl --vacuum-size=10M
+   ```
+
+3. Check what is consuming space:
+
+   ```bash
+   du -sh /var/cache/apt /var/log /var/lib/dpkg /srv
+   ```
+
+4. As a last resort, temporarily relocate the APT cache to `/srv` (which
+   may be on a larger partition on some UCK models):
+
+   ```bash
+   sudo mv /var/cache/apt /srv/apt-cache
+   sudo ln -s /srv/apt-cache /var/cache/apt
+   ```
+
+   **Warning**: This is device-specific and should be reversed after the
+   upgrade completes.
+
 ## Manual Recovery
 
 If the automated upgrade fails partway through, you can manually advance to the next stage:
