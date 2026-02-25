@@ -109,6 +109,7 @@ assert_contains "State transitions"       "DRY-RUN.*Would replace trailing state
 assert_contains "Reboot simulation"       "DRY-RUN.*Would reboot now"
 assert_contains "apt-get upgrade"         "DRY-RUN.*Would run.*apt-get.*[^-]upgrade"
 assert_contains "apt-get dist-upgrade"    "DRY-RUN.*Would run.*dist-upgrade"
+assert_contains "apt-get clean"           "DRY-RUN.*Would run.*optional.*apt-get -qy clean"
 assert_contains "Jessie bootstrap"        "DRY-RUN.*Bootstrapping initial state.*jessie"
 assert_contains "rc.local hook"           "DRY-RUN.*Would ensure marker"
 

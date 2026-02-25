@@ -47,6 +47,8 @@ sudo bash ~/UCK/bin/uck-upgrade --status
 - [How It Works](docs/HOW-IT-WORKS.md) — architecture and state machine design
 - [Troubleshooting](docs/TROUBLESHOOTING.md) — common issues and recovery steps
 - [Bookworm Findings](docs/BOOKWORM-FINDINGS.md) — why Bookworm is not supported
+- [Contributing](CONTRIBUTING.md) — development guidelines and PR process
+- [Security Policy](SECURITY.md) — vulnerability reporting
 
 ## ⚠️ Warning
 
